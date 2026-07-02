@@ -6,6 +6,8 @@ sobald ein Gerät verfügbar wird. Läuft als kleine Spring-Boot-App mit eingeba
 
 > Inoffizielles, nicht-kommerzielles Hobby-Projekt. Keine Zugehörigkeit zu oder Kooperation mit den
 > genannten Händlern/Marken - alle Marken- und Produktnamen gehören ihren jeweiligen Inhabern.
+>
+> 🚧 **Work-in-Progress**
 
 <a href='https://ko-fi.com/J3G820LBTF' target='_blank'><img height='36' style='border:0px;height:36px;' src='https://storage.ko-fi.com/cdn/kofi6.png?v=6' border='0' alt='Buy Me a Coffee at ko-fi.com' /></a>
 
@@ -68,8 +70,6 @@ Weitere Einstellungen (Shops, Radius, Amazon/Lidl/kleinanzeigen-URLs, Ports, …
 
 ### Automatisch Reservieren Bot (ALPHA)
 
-> Aktuell Work-in-Progress!
-
 Damit der Bot automatisch versuchen kann, ein Gerät zu reservieren, ist es von Vorteil (oder wird gar benötigt) mit einem Account eingeloggt zu sein.
 
 Für einige dieser Bots benötigt es einen AES-Key zur Verschlüsselung des Passwortes.
@@ -89,4 +89,21 @@ Dann im Dashboard unter Einstellungen die Credentials eintragen für die jeweili
 Der Bot versucht dann bei Verfügbarkeit ein Gerät zu reservieren, in dem im eingeloggten Zustand das Gerät in den Warenkorb gelegt wird und zum Checkout geht.
 
 War dies erfolgreich, erfolgt eine Telegram Benachrichtigung. Der Prozess muss dann vom User über Telegram bestätigt werden.
+
+## Disclaimer
+
+Dieses Projekt ist ein **nicht-kommerzielles Hobby- und Proof-of-Concept-Projekt** und
+befindet sich in aktiver Entwicklung (Work-in-Progress). Es wird ohne Gewähr und
+ausschließlich zu privaten, experimentellen und Lernzwecken bereitgestellt. Es besteht
+keine Verbindung zu den genannten Händlern oder Marken.
+
+**Verantwortung des Nutzers.** Wer dieses Tool einsetzt, ist **allein selbst dafür
+verantwortlich**, die Nutzungsbedingungen (AGB), die `robots.txt` sowie das geltende
+Recht der jeweils abgefragten Seiten einzuhalten.
+
+**Kein Missbrauch.** Das Projekt darf nicht dazu verwendet werden, Systeme zu stören,
+Schutzmaßnahmen unzulässig zu umgehen, Waren zu horten/weiterzuverkaufen (Scalping)
+oder in sonstiger Weise rechtswidrig oder missbräuchlich zu handeln.
+
+Alle Marken- und Produktnamen gehören ihren jeweiligen Inhabern.
 
