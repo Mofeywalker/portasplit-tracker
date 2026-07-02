@@ -1,0 +1,27 @@
+# Copy this file to `local.properties` (gitignored) and fill in your values.
+# It is loaded automatically on startup via spring.config.import in application.yml.
+
+# Telegram
+TELEGRAM_ENABLED=true
+TELEGRAM_BOT_TOKEN=123456789:AA-your-bot-token
+TELEGRAM_CHAT_ID=987654321
+
+# Amazon / Lidl checks via CloakBrowser (optional):
+#   1. Start the stealth browser: `docker compose up -d cloakbrowser`
+#   2. Enable the checks here. Both connect over CDP to CLOAKBROWSER_CDP_URL.
+# CLOAKBROWSER_CDP_URL=http://localhost:9222
+# AMAZON_ENABLED=true
+# AMAZON_MAX_DELIVERY_DAYS=5      # only count as available if it ships within N days
+# AMAZON_REQUIRE_PRIME=false      # set true to require Prime/fast shipping for "available"
+# LIDL_ENABLED=true               # Lidl sells only the PortaSplit Cool
+
+# kleinanzeigen.de new-offer watcher (also via the CloakBrowser):
+#   Notifies only for freshly-posted offers (the newest one, once per ad).
+#   The search URL is the on/off switch: set it to enable, leave empty to disable. It can also be
+#   set at runtime from the settings page.
+# KLEINANZEIGEN_URL=https://www.kleinanzeigen.de/s-anzeige:angebote/midea-portasplit/k0c98
+# KLEINANZEIGEN_FRESHNESS_MINUTES=3   # only alert for offers posted within the last N minutes
+
+# Optional overrides
+# SERVER_PORT=8080
+# PORTASPLIT_DB_PATH=./data/portasplit.db

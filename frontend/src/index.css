@@ -1,0 +1,72 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", system-ui, sans-serif;
+  --font-display: "Nunito", "Inter", system-ui, sans-serif;
+
+  --color-brand-50: #eff8ff;
+  --color-brand-100: #dcefff;
+  --color-brand-200: #b9e0fe;
+  --color-brand-300: #7cc8fb;
+  --color-brand-400: #38bdf8;
+  --color-brand-500: #0ea5e9;
+  --color-brand-600: #0284c7;
+  --color-brand-700: #0369a1;
+
+  --animate-fade-in: fade-in 0.3s cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-pulse-ring: pulse-ring 1.7s ease-out infinite;
+}
+
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(7px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse-ring {
+  from { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.5); }
+  to   { box-shadow: 0 0 0 9px rgba(16, 185, 129, 0); }
+}
+
+/* Tailwind v4 no longer sets cursor:pointer on buttons by default — restore it. */
+@layer base {
+  button:not(:disabled),
+  [role="button"]:not(:disabled),
+  summary,
+  label:has(input[type="checkbox"]) {
+    cursor: pointer;
+  }
+  button:disabled {
+    cursor: not-allowed;
+  }
+  h1, h2, h3 {
+    font-family: var(--font-display);
+  }
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background:
+    radial-gradient(1100px 540px at 88% -12%, rgba(56, 189, 248, 0.18), transparent 62%),
+    radial-gradient(820px 480px at 2% 4%, rgba(16, 185, 129, 0.08), transparent 58%),
+    #eef5fb;
+  background-attachment: fixed;
+  color: #1e293b;
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+/* Soft, friendly surface — white card with a gentle diffuse lift instead of a hard outline. */
+.card {
+  background: #ffffff;
+  box-shadow:
+    0 1px 2px rgba(15, 23, 42, 0.04),
+    0 14px 30px -18px rgba(15, 23, 42, 0.20);
+}
+
+.font-display { font-family: var(--font-display); }
+
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-thumb { background: #cbd9e6; border-radius: 8px; border: 2px solid #eef5fb; }
+::-webkit-scrollbar-thumb:hover { background: #aebfcf; }

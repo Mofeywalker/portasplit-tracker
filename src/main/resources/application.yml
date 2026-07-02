@@ -1,0 +1,113 @@
+spring:
+  application:
+    name: portasplit-tracker
+
+  # Optional local-only secrets/overrides (gitignored). See local.properties.example.
+  config:
+    import: optional:file:./local.properties
+
+  datasource:
+    url: jdbc:sqlite:${PORTASPLIT_DB_PATH:./data/portasplit.db}
+    driver-class-name: org.sqlite.JDBC
+    hikari:
+      # SQLite handles a single writer at a time; a pool size of 1 avoids "database is locked" errors.
+      maximum-pool-size: 1
+      connection-init-sql: PRAGMA busy_timeout=5000
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    database-platform: org.hibernate.community.dialect.SQLiteDialect
+    open-in-view: false
+    properties:
+      hibernate:
+        connection:
+          # SQLite is non-transactional for DDL; keep autocommit off so Hibernate manages transactions.
+          autocommit: false
+
+  jackson:
+    default-property-inclusion: non_null
+
+server:
+  port: ${SERVER_PORT:8080}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info
+  endpoint:
+    health:
+      show-details: when_authorized
+
+app:
+  telegram:
+    enabled: ${TELEGRAM_ENABLED:false}
+    bot-token: ${TELEGRAM_BOT_TOKEN:}
+    chat-id: ${TELEGRAM_CHAT_ID:}
+    api-base: https://api.telegram.org
+  notifications:
+    notify-on-first-seen: true
+  shops:
+    seed-file: classpath:shops.seed.json
+    config-file: ./shops.json
+    merge-on-startup: true
+  # Shared CloakBrowser CDP server (see docker-compose.yml), used by Amazon and Lidl.
+  cloakbrowser:
+    cdp-url: ${CLOAKBROWSER_CDP_URL:http://localhost:9222}
+    timeout: 45s
+  amazon:
+    # Requires a running CloakBrowser CDP server. Off by default.
+    enabled: ${AMAZON_ENABLED:false}
+    # A product counts as available only if it ships within this many days (guards "ships in weeks").
+    max-delivery-days: ${AMAZON_MAX_DELIVERY_DAYS:5}
+    # Prime is shown/preferred; set true to require fast/Prime shipping for "available".
+    require-prime: ${AMAZON_REQUIRE_PRIME:false}
+    products:
+      # Midea PortaSplit (ASIN B0D3PP64JS) und PortaSplit Cool (ASIN B0GXDWTFR5).
+      PORTASPLIT: https://www.amazon.de/Midea-Klimaanlage-Entfeuchten-Ventilieren-Silent-Modus/dp/B0D3PP64JS
+      PORTASPLIT_COOL: https://www.amazon.de/Midea-Portasplit-Cool-Klimaanlage-Silent-Modus/dp/B0GXDWTFR5
+    min-interval-ms: 45000      # min 45 seconds
+    max-interval-ms: 75000      # max 75 seconds
+    initial-delay-ms: 35000     # first Amazon poll 35s after startup
+  lidl:
+    # Lidl sells only the PortaSplit Cool. Requires the CloakBrowser. Off by default.
+    enabled: ${LIDL_ENABLED:false}
+    url: ${LIDL_URL:https://www.lidl.de/p/midea-porta-split-cool/p100407988}
+    min-interval-ms: 45000      # min 45 seconds
+    max-interval-ms: 75000      # max 75 seconds
+    initial-delay-ms: 45000     # first Lidl poll 45s after startup
+  kleinanzeigen:
+    # Watches a kleinanzeigen.de search-results URL and notifies on a freshly-posted offer only.
+    # Requires the CloakBrowser. The watcher is enabled precisely when a URL is configured — set it
+    # here via KLEINANZEIGEN_URL or at runtime from the settings page. No URL → disabled.
+    # (The legacy KLEINANZEIGEN_ENABLED flag is no longer consulted; the URL is the on/off switch.)
+    enabled: ${KLEINANZEIGEN_ENABLED:false}
+    url: ${KLEINANZEIGEN_URL:}
+    # Only notify for listings posted within this many minutes (newest only, de-duped by ad id).
+    freshness-minutes: ${KLEINANZEIGEN_FRESHNESS_MINUTES:3}
+    min-interval-ms: 45000      # min 45 seconds
+    max-interval-ms: 75000      # max 75 seconds
+    initial-delay-ms: 25000     # first kleinanzeigen poll 25s after startup
+
+  # toom auto-reserve (separate feature from scraping; on/off + credentials are set at runtime from the
+  # dashboard). Requires a logged-in toom account; the password is encrypted at rest with this key.
+  # Generate a key with:  openssl rand -base64 32   — and put it in .env as TOOM_RESERVE_CRYPTO_KEY.
+  # Without a key the feature stays disabled (nothing is stored in the clear).
+  toom-reserve:
+    fingerprint-seed: ${TOOM_RESERVE_FINGERPRINT_SEED:55268}
+    crypto-key: ${TOOM_RESERVE_CRYPTO_KEY:}
+
+  # Per-chain branch checkers (direct to the chain's own API/site) — the availability scrapers.
+  # OBI/toom/Globus are plain JSON APIs; Hornbach (listing-watcher) and Bauhaus (CloakBrowser) are
+  # operational and on by default. Only Hagebau is off (store-id mapping TODO).
+  hagebau:
+    enabled: false
+  hornbach:
+    enabled: true
+  bauhaus:
+    enabled: true
+
+logging:
+  level:
+    de.wss.portasplit: INFO

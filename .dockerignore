@@ -1,0 +1,31 @@
+# Build outputs (rebuilt inside the image)
+target/
+frontend/node_modules/
+frontend/node/
+frontend/dist/
+frontend/.vite/
+
+# Runtime data / secrets (must not leak into the image)
+data/
+*.db
+*.db-shm
+*.db-wal
+.env
+local.properties
+mock.json
+
+# Claude Code local session state
+.claude/
+
+# VCS / IDE / OS
+.git/
+.gitignore
+.idea/
+*.iml
+.vscode/
+.DS_Store
+
+# Docker files themselves
+Dockerfile
+.dockerignore
+docker-compose.yml

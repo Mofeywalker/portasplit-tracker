@@ -1,0 +1,39 @@
+# Build
+target/
+!.mvn/wrapper/maven-wrapper.jar
+
+# Frontend (React/Vite) build tooling & output
+/frontend/node_modules/
+/frontend/node/
+/frontend/dist/
+/frontend/.vite/
+
+# SQLite database (kept out of VCS; created at runtime)
+/data/
+*.db
+*.db-shm
+*.db-wal
+
+# IDE
+.idea/
+*.iml
+.vscode/
+.settings/
+.classpath
+.project
+.factorypath
+
+# OS
+.DS_Store
+
+# Local env / secrets
+.env
+local.properties
+!local.properties.example
+
+# Claude Code local session state (not shared project config)
+.claude/settings.local.json
+.claude/scheduled_tasks.lock
+
+# Local scrape/test data dump (not source, not meant for the public repo)
+/mock.json

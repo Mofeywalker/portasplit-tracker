@@ -1,0 +1,10 @@
+[
+  { "chain": "Bauhaus",         "name": "Bauhaus Online",         "onlineOnly": true, "enabled": true },
+  { "chain": "Hornbach",        "name": "Hornbach Online",        "onlineOnly": true, "enabled": true },
+  { "chain": "Toom",            "name": "Toom Online",            "onlineOnly": true, "enabled": true },
+  { "chain": "OBI",             "name": "OBI Online",             "onlineOnly": true, "enabled": true },
+  { "chain": "Hagebau",         "name": "Hagebau Online",         "onlineOnly": true, "enabled": true },
+  { "chain": "Globus Baumarkt", "name": "Globus Baumarkt Online", "onlineOnly": true, "enabled": true },
+  { "chain": "Amazon",          "name": "Amazon.de",              "matchName": "amazon", "onlineOnly": true, "source": "AMAZON", "enabled": true },
+  { "chain": "Lidl",            "name": "Lidl.de",                "matchName": "lidl",   "onlineOnly": true, "source": "LIDL",   "enabled": true }
+]

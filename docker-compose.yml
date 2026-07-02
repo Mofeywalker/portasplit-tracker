@@ -1,0 +1,72 @@
+# Full stack for the PortaSplit tracker. Start everything with:
+#
+#     docker compose up -d --build
+#
+# - cloakbrowser: stealth Chromium as a CDP server (solves Cloudflare, scrapes Amazon/Lidl/chains).
+# - app:          the Spring Boot tracker (UI on http://localhost:8080), polls the per-chain
+#                 checkers, Amazon and Lidl. SQLite DB is persisted to ./data on the host.
+#
+# The app shares the cloakbrowser network namespace (network_mode: service:cloakbrowser) and
+# reaches the CDP server over loopback (http://localhost:9222). This is required: cloakserve
+# only accepts WebSocket upgrades carrying an Origin header over loopback — over a regular
+# inter-container hostname it returns 403 (Tyrus/kklisura then fails with "Handshake error").
+# Because the namespace is shared, the app's 8080 port is published on the cloakbrowser service.
+#
+# Telegram secrets are read from a local .env file (gitignored).
+services:
+  cloakbrowser:
+    image: cloakhq/cloakbrowser
+    # Headed mode (rendered to Xvfb inside the container). CloakBrowser's docs note that some sites
+    # detect headless even with its C++ patches; Cloudflare Turnstile (incl. managed challenges) only
+    # passes reliably in headed mode — required to get the Cloudflare-protected chains past the edge.
+    command: cloakserve --headless=false
+    restart: unless-stopped
+    ports:
+      - "8080:8080"               # the app listens here (shared network namespace)
+      - "127.0.0.1:9222:9222"     # CDP, loopback only (optional host-side debugging)
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9222/json/version"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+  app:
+    build: .
+    restart: unless-stopped
+    # Share cloakbrowser's network stack so CDP is reached over loopback (see header note).
+    network_mode: "service:cloakbrowser"
+    depends_on:
+      cloakbrowser:
+        condition: service_healthy
+    environment:
+      # --- Persistence: SQLite on the mounted ./data volume ---
+      PORTASPLIT_DB_PATH: /app/data/portasplit.db
+
+      # --- Shared CloakBrowser CDP endpoint (loopback, via the shared namespace) ---
+      CLOAKBROWSER_CDP_URL: http://localhost:9222
+
+      # --- Amazon + Lidl polling (both run through the CloakBrowser) ---
+      AMAZON_ENABLED: "true"
+      LIDL_ENABLED: "true"
+
+      # --- kleinanzeigen.de new-offer watcher (also through the CloakBrowser) ---
+      # The search URL is the on/off switch: set KLEINANZEIGEN_URL (here or in .env) to enable it;
+      # leave it empty to disable. It can also be set at runtime from the settings page.
+      KLEINANZEIGEN_URL: ${KLEINANZEIGEN_URL:-}
+
+      # --- Telegram notifications (token/chat-id come from .env) ---
+      TELEGRAM_ENABLED: "true"
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN:-}
+      TELEGRAM_CHAT_ID: ${TELEGRAM_CHAT_ID:-}
+
+      # --- toom auto-reserve: AES key to encrypt the stored toom password at rest (from .env) ---
+      TOOM_RESERVE_CRYPTO_KEY: ${TOOM_RESERVE_CRYPTO_KEY:-}
+    volumes:
+      - ./data:/app/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
