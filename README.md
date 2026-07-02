@@ -1,7 +1,7 @@
 # PortaSplit Tracker
 ![img.png](img.png)
 Überwacht die Verfügbarkeit der **Midea PortaSplit** (und PortaSplit Cool) bei mehreren
-Bau-/Klimamärkten sowie Amazon, Lidl und kleinanzeigen.de - und schickt eine **Telegram**-Nachricht,
+Baumärkten sowie Amazon, Lidl und kleinanzeigen.de - und schickt eine **Telegram**-Nachricht,
 sobald ein Gerät verfügbar wird. Läuft als kleine Spring-Boot-App mit eingebautem Dashboard.
 
 > Inoffizielles, nicht-kommerzielles Hobby-Projekt. Keine Zugehörigkeit zu oder Kooperation mit den
@@ -18,10 +18,8 @@ sobald ein Gerät verfügbar wird. Läuft als kleine Spring-Boot-App mit eingeba
   einem neuen kleinanzeigen-Angebot
 - **Dashboard** mit Live-Status, Verlaufsdiagramm, Änderungs-Feed und technischem Logbuch
 - **Umkreissuche**: Filialen per PLZ + Radius ein-/ausblenden (Online-Shops zählen immer)
-- Quellen einzeln zur Laufzeit an-/abschaltbar, keine Neustarts nötig
-- **SQLite** lokal im Projekt - keine externe Datenbank nötig
-- Amazon/Lidl/Bauhaus/kleinanzeigen laufen über einen **CloakBrowser** (Stealth-Chromium via Docker),
-  da diese Seiten Bot-Schutz oder eine reine SPA ohne Bestands-API haben
+- Historie & Logging zur Nachvollziehbarkeit
+- Mit **[CloakBrowser](https://github.com/CloakHQ/cloakbrowser)** werden Bot-Protections weitesgehend umgangen!
 
 ## Installation
 
