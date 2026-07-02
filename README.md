@@ -25,6 +25,10 @@ sobald ein Gerät verfügbar wird. Läuft als kleine Spring-Boot-App mit eingeba
 
 ## Installation
 
+> 🤖 **Mit einem KI-Agenten installieren?** Gib deinem Coding-Agenten (Claude Code, Claude Cowork,
+> opencode, …) die Datei **[AGENT_SETUP.md](AGENT_SETUP.md)** — sie führt ihn Schritt für Schritt
+> durch eine geführte Installation und Konfiguration auf deinem PC.
+
 **Voraussetzungen:** JDK 21+, Maven 3.9+ (für den lokalen Start) bzw. Docker (empfohlen).
 
 ### Docker (empfohlen)
