@@ -1,5 +1,5 @@
 # PortaSplit Tracker
-
+![img.png](img.png)
 Überwacht die Verfügbarkeit der **Midea PortaSplit** (und PortaSplit Cool) bei mehreren
 Bau-/Klimamärkten sowie Amazon, Lidl und kleinanzeigen.de - und schickt eine **Telegram**-Nachricht,
 sobald ein Gerät verfügbar wird. Läuft als kleine Spring-Boot-App mit eingebautem Dashboard.
