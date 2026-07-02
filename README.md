@@ -46,7 +46,9 @@ Dashboard unter **http://localhost:8080**, SQLite-Datei landet automatisch unter
 Zusätzlich wird Cloakbrowser benötigt:
 `docker compose up -d cloakbrowser`.
 
-## Telegram einrichten
+## Konfiguration
+
+### Telegram
 
 1. Bei [@BotFather](https://t.me/BotFather) einen Bot anlegen → **Bot-Token** kopieren.
 2. Dem Bot eine Nachricht schreiben, dann die eigene **Chat-ID** abrufen, z. B. über
@@ -63,3 +65,28 @@ Zusätzlich wird Cloakbrowser benötigt:
 
 Weitere Einstellungen (Shops, Radius, Amazon/Lidl/kleinanzeigen-URLs, Ports, …) stehen in
 `local.properties.example` bzw. `src/main/resources/application.yml`.
+
+### Automatisch Reservieren Bot (ALPHA)
+
+> Aktuell Work-in-Progress!
+
+Damit der Bot automatisch versuchen kann, ein Gerät zu reservieren, ist es von Vorteil (oder wird gar benötigt) mit einem Account eingeloggt zu sein.
+
+Für einige dieser Bots benötigt es einen AES-Key zur Verschlüsselung des Passwortes.
+
+AES-Key generieren mit `openssl rand -base64 32` (Unix-Systeme).
+
+Und in der `.env` oder `local.properties`:
+
+```dotenv
+RESERVE_CRYPTO_KEY=
+```
+
+eintragen.
+
+Dann im Dashboard unter Einstellungen die Credentials eintragen für die jeweiligen Shops.
+
+Der Bot versucht dann bei Verfügbarkeit ein Gerät zu reservieren, in dem im eingeloggten Zustand das Gerät in den Warenkorb gelegt wird und zum Checkout geht.
+
+War dies erfolgreich, erfolgt eine Telegram Benachrichtigung. Der Prozess muss dann vom User über Telegram bestätigt werden.
+

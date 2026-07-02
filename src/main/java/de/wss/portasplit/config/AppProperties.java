@@ -37,7 +37,7 @@ public record AppProperties(
      * @param fingerprintSeed dedicated CloakBrowser fingerprint seed so the logged-in toom session
      *                        lives in its own warm tab, isolated from the scrapers' tabs.
      * @param cryptoKey       Base64-encoded AES key (16/24/32 bytes) used to encrypt the stored toom
-     *                        password at rest. From {@code APP_TOOM_RESERVE_CRYPTO_KEY}; never committed.
+     *                        password at rest. From {@code APP_RESERVE_CRYPTO_KEY}; never committed.
      *                        When blank, credentials cannot be stored and the feature stays disabled.
      */
     public record ToomReserve(

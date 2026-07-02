@@ -61,7 +61,7 @@ services:
       TELEGRAM_CHAT_ID: ${TELEGRAM_CHAT_ID:-}
 
       # --- toom auto-reserve: AES key to encrypt the stored toom password at rest (from .env) ---
-      TOOM_RESERVE_CRYPTO_KEY: ${TOOM_RESERVE_CRYPTO_KEY:-}
+      RESERVE_CRYPTO_KEY: ${RESERVE_CRYPTO_KEY:-}
     volumes:
       - ./data:/app/data
     healthcheck:

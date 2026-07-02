@@ -428,7 +428,7 @@ export default function SettingsModal({
               <div className="px-3.5 py-3 space-y-3">
                 {tr && !tr.cryptoConfigured && (
                   <p className="text-[11px] text-amber-600 flex items-center gap-1">
-                    <Alert className="h-3.5 w-3.5" /> Kein Crypto-Key gesetzt (APP_TOOM_RESERVE_CRYPTO_KEY) - Login deaktiviert.
+                    <Alert className="h-3.5 w-3.5" /> Kein Crypto-Key gesetzt (APP_RESERVE_CRYPTO_KEY) - Login deaktiviert.
                   </p>
                 )}
                 <div className="flex items-center gap-2 text-xs">

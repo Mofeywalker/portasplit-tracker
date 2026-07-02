@@ -56,7 +56,7 @@ public class ToomReserveController {
     public ToomReserveStatusDto setCredentials(@RequestBody ToomCredentialsRequest req) {
         if (!auth.cryptoConfigured()) {
             throw new ResponseStatusException(HttpStatus.PRECONDITION_FAILED,
-                    "Kein Crypto-Key gesetzt (APP_TOOM_RESERVE_CRYPTO_KEY) - Passwort kann nicht sicher gespeichert werden.");
+                    "Kein Crypto-Key gesetzt (APP_RESERVE_CRYPTO_KEY) - Passwort kann nicht sicher gespeichert werden.");
         }
         if (!StringUtils.hasText(req.email()) || !StringUtils.hasText(req.password())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "E-Mail und Passwort erforderlich");

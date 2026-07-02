@@ -52,7 +52,7 @@ public class SecretCipher {
     /** Encrypts {@code plain}; returns Base64(iv‖ciphertext). Throws if no key is configured. */
     public String encrypt(String plain) {
         if (key == null) {
-            throw new IllegalStateException("Kein Crypto-Key konfiguriert (APP_TOOM_RESERVE_CRYPTO_KEY)");
+            throw new IllegalStateException("Kein Crypto-Key konfiguriert (APP_RESERVE_CRYPTO_KEY)");
         }
         try {
             byte[] iv = new byte[IV_LEN];
@@ -72,7 +72,7 @@ public class SecretCipher {
     /** Decrypts a value produced by {@link #encrypt}. Throws if no key is configured or on tamper. */
     public String decrypt(String enc) {
         if (key == null) {
-            throw new IllegalStateException("Kein Crypto-Key konfiguriert (APP_TOOM_RESERVE_CRYPTO_KEY)");
+            throw new IllegalStateException("Kein Crypto-Key konfiguriert (APP_RESERVE_CRYPTO_KEY)");
         }
         try {
             byte[] all = Base64.getDecoder().decode(enc);
