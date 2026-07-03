@@ -1,41 +1,41 @@
 package de.wss.portasplit.service;
 
-import de.wss.portasplit.config.AppProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
-import org.springframework.web.client.RestClient;
 
-import java.util.Map;
+import java.util.List;
 
-/** Sends messages through the Telegram Bot API. */
+/** Sends notifications through the Telegram Bot API to the confirmed subscribers. */
 @Service
 public class TelegramService {
 
     private static final Logger log = LoggerFactory.getLogger(TelegramService.class);
 
-    private final RestClient restClient;
-    private final AppProperties props;
+    private final TelegramBotClient client;
+    private final TelegramSubscriberService subscribers;
     private final SettingsService settings;
 
-    public TelegramService(RestClient restClient, AppProperties props, SettingsService settings) {
-        this.restClient = restClient;
-        this.props = props;
+    public TelegramService(TelegramBotClient client, TelegramSubscriberService subscribers,
+                           SettingsService settings) {
+        this.client = client;
+        this.subscribers = subscribers;
         this.settings = settings;
     }
 
+    /** Configured (bot on + token) and at least one confirmed recipient exists. */
     public boolean isConfigured() {
-        AppProperties.Telegram t = props.telegram();
-        return t.enabled()
-                && StringUtils.hasText(t.botToken())
-                && StringUtils.hasText(t.chatId());
+        return client.canOperate() && subscribers.confirmedCount() > 0;
     }
 
     /** Runtime master switch for automatic notifications (set on the settings page). */
     public boolean notificationsEnabled() {
         return settings.telegramNotifyEnabled();
+    }
+
+    /** Number of confirmed recipient chats (0 when none has opted in / been seeded). */
+    public int recipientCount() {
+        return (int) subscribers.confirmedCount();
     }
 
     /**
@@ -52,37 +52,43 @@ public class TelegramService {
     }
 
     /**
-     * Sends an HTML-formatted message. Returns {@code true} if it was accepted by Telegram.
-     * No-op (returns {@code false}) when Telegram is disabled or not configured.
+     * Sends an HTML-formatted message to every confirmed recipient. Returns {@code true} if at least
+     * one recipient accepted it. No-op (returns {@code false}) when Telegram is disabled or nobody is
+     * confirmed.
+     *
+     * <p>"At least one" rather than "all" is deliberate: callers use the result to decide whether a
+     * one-off event (e.g. a new listing) has been handled. Requiring every recipient to succeed would
+     * re-send the whole batch on the next poll — spamming those who already received it — whenever a
+     * single chat id is unreachable (bot blocked, chat deleted). A total failure (Telegram down) still
+     * returns {@code false} and is retried.
      */
     public boolean sendHtml(String html) {
-        AppProperties.Telegram t = props.telegram();
-        if (!isConfigured()) {
+        if (!client.canOperate()) {
             log.debug("Telegram not configured/enabled; skipping message");
             return false;
         }
-        String url = t.apiBase() + "/bot" + t.botToken() + "/sendMessage";
-        try {
-            restClient.post()
-                    .uri(url)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .body(Map.of(
-                            "chat_id", t.chatId(),
-                            "text", html,
-                            "parse_mode", "HTML",
-                            "disable_web_page_preview", true
-                    ))
-                    .retrieve()
-                    .toBodilessEntity();
-            log.debug("Telegram message sent");
-            return true;
-        } catch (Exception e) {
-            log.warn("Failed to send Telegram message: {}", e.getMessage());
+        List<String> chatIds = subscribers.confirmedChatIds();
+        if (chatIds.isEmpty()) {
+            log.debug("Telegram has no confirmed recipients; skipping message");
             return false;
         }
+        int sent = 0;
+        for (String chatId : chatIds) {
+            if (client.sendHtml(chatId, html)) {
+                sent++;
+            }
+        }
+        if (sent == 0) {
+            log.warn("Telegram message not delivered to any of {} recipient(s)", chatIds.size());
+        } else if (sent < chatIds.size()) {
+            log.warn("Telegram message delivered to {}/{} recipient(s)", sent, chatIds.size());
+        } else {
+            log.debug("Telegram message sent to {} recipient(s)", sent);
+        }
+        return sent > 0;
     }
 
-    /** Escapes the five characters that are special in Telegram HTML mode. */
+    /** Escapes the three characters that are special in Telegram HTML mode. */
     public static String escape(String value) {
         if (value == null) {
             return "";

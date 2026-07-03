@@ -27,6 +27,8 @@ public class SettingsService {
     public static final String WORKER_ENABLED_PREFIX = "worker.enabled.";
     /** Runtime master switch for sending Telegram notifications (independent of the static config). */
     public static final String TELEGRAM_NOTIFY = "telegram.notify";
+    /** Highest processed Telegram {@code update_id} + 1 — the getUpdates poll offset (survives restarts). */
+    public static final String TELEGRAM_UPDATES_OFFSET = "telegram.updates.offset";
 
     // --- toom auto-reserve (separate feature from scraping; requires a logged-in toom account) ------
     /** Runtime on/off switch for the toom auto-reserve feature. Default off. */

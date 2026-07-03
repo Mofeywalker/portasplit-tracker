@@ -76,7 +76,11 @@ public class DashboardController {
                     "Telegram ist nicht konfiguriert. Bitte app.telegram.enabled, bot-token und chat-id setzen.");
         }
         boolean sent = notificationService.sendTest();
+        int recipients = telegramService.recipientCount();
+        String okMsg = recipients > 1
+                ? "Testnachricht an " + recipients + " Empfänger gesendet."
+                : "Testnachricht gesendet.";
         return new TelegramTestResult(true, sent,
-                sent ? "Testnachricht gesendet." : "Senden fehlgeschlagen - siehe Server-Log.");
+                sent ? okMsg : "Senden fehlgeschlagen - siehe Server-Log.");
     }
 }

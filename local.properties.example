@@ -4,7 +4,10 @@
 # Telegram
 TELEGRAM_ENABLED=true
 TELEGRAM_BOT_TOKEN=123456789:AA-your-bot-token
-TELEGRAM_CHAT_ID=987654321
+# Optional startup SEED for recipients (one id, or several comma-separated). Merged into the DB on
+# boot. At runtime people opt in via the bot (/start + confirm) and out via /stop — the DB is the
+# source of truth, so you can leave this empty and manage everyone through the bot.
+TELEGRAM_CHAT_ID=987654321,123456789
 
 # Amazon / Lidl checks via CloakBrowser (optional):
 #   1. Start the stealth browser: `docker compose up -d cloakbrowser`

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { api } from '../api.js';
-import { Telegram, Branch, Check, Alert, MapPin, Clock, Search } from '../icons.jsx';
+import { Telegram, Branch, Check, Alert, MapPin, Clock, Search, Trash, ExternalLink } from '../icons.jsx';
 
 // A toggle row: label + description on the left, an iOS-style switch on the right.
 function Switch({ checked, disabled, onChange, accent = 'emerald' }) {
@@ -109,6 +109,10 @@ export default function SettingsModal({
   const [notif, setNotif] = useState(null);
   const [notifBusy, setNotifBusy] = useState(false);
 
+  const [subs, setSubs] = useState(null);
+  const [subBusy, setSubBusy] = useState(null); // chatId currently being removed
+  const [copied, setCopied] = useState(false);
+
   const [radius, setRadius] = useState(null);
   const [radiusBusy, setRadiusBusy] = useState(false);
   const [radiusSaving, setRadiusSaving] = useState(false);
@@ -129,6 +133,7 @@ export default function SettingsModal({
 
   useEffect(() => {
     api('/api/settings/notifications').then(setNotif).catch(() => {});
+    api('/api/settings/telegram/subscribers').then(setSubs).catch(() => {});
     api('/api/settings/radius').then((d) => { setRadius(d); setKm(d.km ? String(d.km) : '50'); }).catch(() => {});
     api('/api/toom-reserve/status').then(setTr).catch(() => {});
     api('/api/settings/intervals').then(setIntervals).catch(() => {});
@@ -191,6 +196,32 @@ export default function SettingsModal({
       toast('Speichern fehlgeschlagen: ' + e.message, 'error');
     } finally {
       setNotifBusy(false);
+    }
+  };
+
+  const removeSubscriber = async (chatId) => {
+    setSubBusy(chatId);
+    try {
+      const r = await api(`/api/settings/telegram/subscribers/${encodeURIComponent(chatId)}`, { method: 'DELETE' });
+      setSubs(r);
+      // Reflect the changed recipient count in the Telegram status badge.
+      api('/api/settings/notifications').then(setNotif).catch(() => {});
+      toast('Empfänger entfernt', 'info');
+    } catch (e) {
+      toast('Entfernen fehlgeschlagen: ' + e.message, 'error');
+    } finally {
+      setSubBusy(null);
+    }
+  };
+
+  const copyBotLink = async () => {
+    if (!subs?.botLink) return;
+    try {
+      await navigator.clipboard.writeText(subs.botLink);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    } catch {
+      toast('Kopieren nicht möglich', 'info');
     }
   };
 
@@ -295,6 +326,66 @@ export default function SettingsModal({
                   <Telegram className="h-4 w-4 text-sky-500" />
                   {tgTesting ? 'Sende…' : 'Testen'}
                 </button>
+              </div>
+            </div>
+
+            {/* Empfänger: self-service opt-in via the bot + who currently receives alerts. */}
+            <div className="mt-3">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-xs font-bold text-slate-500 uppercase tracking-wide">
+                  Empfänger{subs ? ` (${subs.confirmed} aktiv)` : ''}
+                </span>
+              </div>
+
+              {/* Share link: anyone who opens it and confirms in the bot becomes a recipient. */}
+              {subs?.botLink && (
+                <div className="flex items-center gap-2 rounded-lg bg-sky-50 ring-1 ring-sky-100 px-3 py-2 mb-2">
+                  <Telegram className="h-4 w-4 text-sky-500 shrink-0" />
+                  <a href={subs.botLink} target="_blank" rel="noreferrer"
+                    className="text-xs font-semibold text-sky-700 hover:underline truncate">
+                    {subs.botLink.replace(/^https:\/\//, '')}
+                  </a>
+                  <button onClick={copyBotLink}
+                    className="ml-auto shrink-0 inline-flex items-center gap-1 rounded-md bg-white px-2 py-1 text-[11px] font-semibold text-slate-600 ring-1 ring-slate-200 hover:bg-slate-50 transition">
+                    {copied ? <><Check className="h-3 w-3 text-emerald-500" /> Kopiert</> : <><ExternalLink className="h-3 w-3" /> Link kopieren</>}
+                  </button>
+                </div>
+              )}
+              <p className="text-[11px] text-slate-400 mb-2 leading-snug">
+                Teile den Link. Wer dem Bot <b>/start</b> schickt und bestätigt, bekommt Alarme. Abmelden per <b>/stop</b>.
+              </p>
+
+              <div className="rounded-xl ring-1 ring-slate-200 divide-y divide-slate-100">
+                {subs === null ? (
+                  <div className="px-3.5 py-3 text-xs text-slate-400">Lade Empfänger…</div>
+                ) : subs.subscribers.length === 0 ? (
+                  <div className="px-3.5 py-3 text-xs text-slate-400">
+                    Noch keine Empfänger. Teile den Link oben oder setze TELEGRAM_CHAT_ID.
+                  </div>
+                ) : (
+                  subs.subscribers.map((s) => {
+                    const confirmed = s.state === 'CONFIRMED';
+                    return (
+                      <div key={s.chatId} className="flex items-center gap-2.5 px-3.5 py-2.5">
+                        <span className={`h-2 w-2 rounded-full shrink-0 ${confirmed ? 'bg-emerald-500' : 'bg-amber-400'}`} />
+                        <div className="min-w-0">
+                          <div className="text-sm font-semibold text-slate-800 truncate">
+                            {s.displayName}
+                            {s.source === 'ENV' && <span className="ml-1.5 rounded bg-slate-100 text-slate-500 ring-1 ring-slate-200 px-1.5 py-0.5 text-[9px] font-bold align-middle">ENV</span>}
+                          </div>
+                          <div className="text-[11px] text-slate-400 truncate tabular-nums">
+                            {confirmed ? 'Bestätigt' : 'Wartet auf Bestätigung'} · {s.chatId}
+                          </div>
+                        </div>
+                        <button onClick={() => removeSubscriber(s.chatId)} disabled={subBusy === s.chatId}
+                          title="Empfänger entfernen"
+                          className="ml-auto shrink-0 grid place-items-center h-7 w-7 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 ring-1 ring-transparent hover:ring-rose-100 disabled:opacity-40 transition">
+                          {subBusy === s.chatId ? <span className="text-[11px]">…</span> : <Trash className="h-3.5 w-3.5" />}
+                        </button>
+                      </div>
+                    );
+                  })
+                )}
               </div>
             </div>
           </section>

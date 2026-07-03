@@ -44,8 +44,15 @@ app:
   telegram:
     enabled: ${TELEGRAM_ENABLED:false}
     bot-token: ${TELEGRAM_BOT_TOKEN:}
+    # Startup SEED for the recipient list: one chat id, or several separated by commas (e.g. 111,222).
+    # These are merged into the DB as confirmed recipients on boot (only if not already present).
+    # At runtime, recipients manage themselves via the bot (/start + confirm, /stop) — the DB is the
+    # source of truth, so a later /stop is not undone by this seed on the next restart.
     chat-id: ${TELEGRAM_CHAT_ID:}
     api-base: https://api.telegram.org
+    # getUpdates short-polling cadence for the opt-in bot (ms). Defaults are fine; shown for reference.
+    poll-interval-ms: ${TELEGRAM_POLL_INTERVAL_MS:5000}
+    poll-initial-delay-ms: ${TELEGRAM_POLL_INITIAL_DELAY_MS:8000}
   notifications:
     notify-on-first-seen: true
   shops:

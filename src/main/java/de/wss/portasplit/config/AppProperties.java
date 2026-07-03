@@ -57,12 +57,34 @@ public record AppProperties(
             @DefaultValue("20000") long initialDelayMs
     ) {}
 
+    /**
+     * @param chatId one or more recipient chat ids. Accepts a single id or a list separated by
+     *               commas, semicolons or whitespace (e.g. {@code 111,222 333}); every id receives
+     *               a copy of each notification. See {@link #chatIds()}.
+     */
     public record Telegram(
             @DefaultValue("false") boolean enabled,
             @DefaultValue("") String botToken,
             @DefaultValue("") String chatId,
             @DefaultValue("https://api.telegram.org") String apiBase
-    ) {}
+    ) {
+
+        /**
+         * The configured recipient chat ids, in declaration order and de-duplicated. Empty when none
+         * is set. Splitting the single {@link #chatId} field keeps backward compatibility: one id
+         * still works unchanged, while a comma/semicolon/whitespace-separated list fans out.
+         */
+        public java.util.List<String> chatIds() {
+            if (chatId == null || chatId.isBlank()) {
+                return java.util.List.of();
+            }
+            return java.util.Arrays.stream(chatId.split("[,;\\s]+"))
+                    .map(String::trim)
+                    .filter(s -> !s.isEmpty())
+                    .distinct()
+                    .toList();
+        }
+    }
 
     public record Notifications(
             /** Notify when a product is observed available for the very first time (no prior state). */

@@ -6,7 +6,9 @@ import de.wss.portasplit.service.KleinanzeigenService;
 import de.wss.portasplit.service.PlzGeocoder;
 import de.wss.portasplit.service.RadiusService;
 import de.wss.portasplit.service.SettingsService;
+import de.wss.portasplit.service.TelegramBotClient;
 import de.wss.portasplit.service.TelegramService;
+import de.wss.portasplit.service.TelegramSubscriberService;
 import de.wss.portasplit.web.dto.IntervalSettingDto;
 import de.wss.portasplit.web.dto.IntervalUpdateRequest;
 import de.wss.portasplit.web.dto.KleinanzeigenSettingsDto;
@@ -15,8 +17,11 @@ import de.wss.portasplit.web.dto.NotificationSettingsDto;
 import de.wss.portasplit.web.dto.NotificationSettingsRequest;
 import de.wss.portasplit.web.dto.RadiusSettingsDto;
 import de.wss.portasplit.web.dto.RadiusSettingsRequest;
+import de.wss.portasplit.web.dto.TelegramSubscriberDto;
+import de.wss.portasplit.web.dto.TelegramSubscribersDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -34,17 +39,23 @@ public class SettingsController {
 
     private final SettingsService settings;
     private final TelegramService telegram;
+    private final TelegramSubscriberService telegramSubscribers;
+    private final TelegramBotClient telegramBot;
     private final RadiusService radiusService;
     private final PlzGeocoder geocoder;
     private final IntervalSettings intervals;
     private final KleinanzeigenService kleinanzeigen;
 
     public SettingsController(SettingsService settings,
-                              TelegramService telegram, RadiusService radiusService,
+                              TelegramService telegram,
+                              TelegramSubscriberService telegramSubscribers,
+                              TelegramBotClient telegramBot, RadiusService radiusService,
                               PlzGeocoder geocoder, IntervalSettings intervals,
                               KleinanzeigenService kleinanzeigen) {
         this.settings = settings;
         this.telegram = telegram;
+        this.telegramSubscribers = telegramSubscribers;
+        this.telegramBot = telegramBot;
         this.radiusService = radiusService;
         this.geocoder = geocoder;
         this.intervals = intervals;
@@ -89,6 +100,24 @@ public class SettingsController {
             settings.putBool(SettingsService.TELEGRAM_NOTIFY, req.telegramNotify());
         }
         return new NotificationSettingsDto(telegram.isConfigured(), settings.telegramNotifyEnabled());
+    }
+
+    /** The Telegram recipients (pending + confirmed) plus a shareable opt-in bot link. */
+    @GetMapping("/telegram/subscribers")
+    public TelegramSubscribersDto getTelegramSubscribers() {
+        String username = telegramBot.botUsername();
+        String botLink = username != null ? "https://t.me/" + username : null;
+        List<TelegramSubscriberDto> list = telegramSubscribers.activeSubscribers().stream()
+                .map(TelegramSubscriberDto::of)
+                .toList();
+        return new TelegramSubscribersDto(botLink, telegramSubscribers.confirmedCount(), list);
+    }
+
+    /** Removes a recipient (opt-out). Idempotent; unknown ids are a no-op. */
+    @DeleteMapping("/telegram/subscribers/{chatId}")
+    public TelegramSubscribersDto removeTelegramSubscriber(@PathVariable String chatId) {
+        telegramSubscribers.unsubscribe(chatId);
+        return getTelegramSubscribers();
     }
 
     @GetMapping("/kleinanzeigen")
