@@ -14,7 +14,7 @@ import java.util.Optional;
 /**
  * Offline German postal-code → coordinate lookup, backed by the bundled {@code plz-centroids.json}
  * (one median centroid per 5-digit PLZ, derived from the open zauberware postal-code dataset). Used by
- * the Umkreissuche so a user can set the radius centre by typing a PLZ instead of raw coordinates — no
+ * the Umkreissuche so a user can set the radius centre by typing a PLZ instead of raw coordinates - no
  * network geocoding at runtime.
  */
 @Component
@@ -30,7 +30,7 @@ public class PlzGeocoder {
         try (InputStream in = new ClassPathResource("plz-centroids.json").getInputStream()) {
             loaded = objectMapper.readValue(in, new TypeReference<Map<String, double[]>>() {});
         } catch (Exception e) {
-            log.error("Failed to load plz-centroids.json — PLZ geocoding for the radius search is disabled: {}",
+            log.error("Failed to load plz-centroids.json - PLZ geocoding for the radius search is disabled: {}",
                     e.getMessage());
         }
         this.centroids = loaded;

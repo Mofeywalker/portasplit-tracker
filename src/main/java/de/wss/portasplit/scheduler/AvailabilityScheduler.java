@@ -29,7 +29,7 @@ import java.util.concurrent.ThreadLocalRandom;
  *
  * <p>All timers are registered unconditionally; the only gate is the source's per-source runtime
  * {@link CheckJobService#enabled(JobType) enabled} flag (toggleable from the dashboard). There is no
- * global pause — each source is switched on/off individually and runs fully independently.
+ * global pause - each source is switched on/off individually and runs fully independently.
  */
 @Configuration
 public class AvailabilityScheduler implements SchedulingConfigurer {
@@ -76,7 +76,7 @@ public class AvailabilityScheduler implements SchedulingConfigurer {
         registrar.addTriggerTask(this::lidlTick, ctx -> nextExecution(JobType.LIDL, ctx));
         registrar.addTriggerTask(this::kleinanzeigenTick, ctx -> nextExecution(JobType.KLEINANZEIGEN, ctx));
 
-        // One timer per chain worker (OBI, toom, Globus, …) — same model: each enqueues onto its own
+        // One timer per chain worker (OBI, toom, Globus, …) - same model: each enqueues onto its own
         // parallel worker and is gated only by its per-source enabled flag.
         for (JobType chain : chainCheckService.jobTypes()) {
             registrar.addTriggerTask(() -> chainTick(chain), ctx -> nextExecution(chain, ctx));

@@ -55,7 +55,7 @@ public class KleinanzeigenClient {
      * back to the {@code /s-anzeige/} URL slug). The appended "Alternative Anzeigen in der Umgebung"
      * block ({@code #srchrslt-adtable-altads}, ads outside the configured PLZ/radius/price) is
      * excluded. Accepts the cookie-consent banner and only reports {@code ready} once listings have
-     * rendered (or an explicit "no results" box shows) — not behind the consent wall and not for a
+     * rendered (or an explicit "no results" box shows) - not behind the consent wall and not for a
      * bot-throttled shell, so those surface as a read failure instead of a bogus "0 offers".
      */
     private static final String EXTRACT_JS = """
@@ -65,7 +65,7 @@ public class KleinanzeigenClient {
               const ALT = '#srchrslt-adtable-altads, [id*="altads"], [class*="similar"], [class*="alternative-"]';
               const isAlt = (el) => !!(el.closest && el.closest(ALT));
 
-              // Card containers — real results only. #srchrslt-adtable holds them in both layouts as
+              // Card containers - real results only. #srchrslt-adtable holds them in both layouts as
               // direct <li> children. Fall back to article.aditem, then to /s-anzeige links.
               const table = document.querySelector('#srchrslt-adtable');
               let cards = table ? [...table.children].filter(el => el.tagName === 'LI' && !isAlt(el)) : [];

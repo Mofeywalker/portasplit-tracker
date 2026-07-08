@@ -102,7 +102,7 @@ public class ShopService {
     /**
      * Enriches existing shops with coordinates (and street/city) from the seed where they are still
      * missing. Needed because shops seeded before the Umkreissuche have no lat/lon, and
-     * {@link #mergeIfMissing} never touches existing rows — without this, the radius filter could not
+     * {@link #mergeIfMissing} never touches existing rows - without this, the radius filter could not
      * place them. Only fills blanks, so dashboard edits are preserved. Returns how many rows changed.
      */
     @Transactional

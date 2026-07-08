@@ -60,7 +60,7 @@ public class DashboardService {
     /**
      * Builds the dashboard overview. The Umkreissuche restricts which branches are returned: when the
      * radius is active only in-scope branches (within the radius) plus all online shops are included.
-     * Scraping is unaffected — every branch is still polled; this only narrows the <em>display</em>.
+     * Scraping is unaffected - every branch is still polled; this only narrows the <em>display</em>.
      *
      * @param showAll when true the radius filter is bypassed (every shop is returned, still annotated
      *                with its distance) so the UI can offer an "Alle anzeigen" view.

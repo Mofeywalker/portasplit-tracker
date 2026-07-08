@@ -24,7 +24,7 @@ import java.util.Set;
  * <p>Each poll notifies every listing younger than {@code app.kleinanzeigen.freshness-minutes} whose
  * ad id has not been seen yet (oldest-first, so the newest is reported last). Seen ids are remembered
  * in a small, bounded ring (persisted via {@link SettingsService}), so each offer is reported at most
- * once — even if it later drops off the page and reappears, and even when two offers share the same
+ * once - even if it later drops off the page and reappears, and even when two offers share the same
  * (minute-precise) timestamp. An offer is only marked seen once its Telegram message is actually
  * accepted, so a transient send failure is retried on the next poll instead of being lost.
  */
@@ -33,7 +33,7 @@ public class KleinanzeigenService {
 
     private static final Logger log = LoggerFactory.getLogger(KleinanzeigenService.class);
 
-    /** Cap on the remembered ad-id ring — large enough to cover any realistic freshness window. */
+    /** Cap on the remembered ad-id ring - large enough to cover any realistic freshness window. */
     private static final int MAX_REMEMBERED_IDS = 50;
 
     private final KleinanzeigenClient client;
@@ -74,7 +74,7 @@ public class KleinanzeigenService {
 
     /**
      * Whether the watcher is active. It is enabled precisely when a search URL is configured (via the
-     * settings page or the {@code KLEINANZEIGEN_URL} env/config) — no link means disabled. The
+     * settings page or the {@code KLEINANZEIGEN_URL} env/config) - no link means disabled. The
      * effective on/off (incl. the runtime worker override) is owned by
      * {@code CheckJobService.enabled(KLEINANZEIGEN)}, which gates enqueuing.
      */
@@ -133,15 +133,15 @@ public class KleinanzeigenService {
                 seen.add(l.adId());
                 changed = true;
                 notified++;
-                log.info("New kleinanzeigen offer: adId={} '{}' ({}s old) — notification sent",
+                log.info("New kleinanzeigen offer: adId={} '{}' ({}s old) - notification sent",
                         l.adId(), l.title(), l.ageSeconds(runAt));
                 jobLog.info("Kleinanzeigen: neues Angebot gemeldet - „{}“ ({}s alt)",
                         l.title(), l.ageSeconds(runAt));
             } else {
                 // Send failed/not delivered: leave it unseen so the next poll retries it (while it is
-                // still fresh). Stop here — further sends this run would almost certainly fail too.
+                // still fresh). Stop here - further sends this run would almost certainly fail too.
                 errors.add("Telegram-Versand fehlgeschlagen für Anzeige " + l.adId());
-                log.warn("Telegram send failed for kleinanzeigen ad {} — will retry next poll", l.adId());
+                log.warn("Telegram send failed for kleinanzeigen ad {} - will retry next poll", l.adId());
                 jobLog.warn("Kleinanzeigen: Telegram-Versand fehlgeschlagen für Anzeige {} - Wiederholung beim nächsten Lauf", l.adId());
                 break;
             }

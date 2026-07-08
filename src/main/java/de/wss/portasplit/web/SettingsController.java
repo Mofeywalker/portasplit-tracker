@@ -9,6 +9,7 @@ import de.wss.portasplit.service.SettingsService;
 import de.wss.portasplit.service.TelegramBotClient;
 import de.wss.portasplit.service.TelegramService;
 import de.wss.portasplit.service.TelegramSubscriberService;
+import de.wss.portasplit.web.dto.AddSubscriberRequest;
 import de.wss.portasplit.web.dto.IntervalSettingDto;
 import de.wss.portasplit.web.dto.IntervalUpdateRequest;
 import de.wss.portasplit.web.dto.KleinanzeigenSettingsDto;
@@ -24,6 +25,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -91,8 +93,7 @@ public class SettingsController {
 
     @GetMapping("/notifications")
     public NotificationSettingsDto getNotifications() {
-        return new NotificationSettingsDto(telegram.isConfigured(),
-                settings.telegramNotifyEnabled(), settings.callOnlyNotifyEnabled());
+        return buildNotificationsDto();
     }
 
     @PutMapping("/notifications")
@@ -103,8 +104,15 @@ public class SettingsController {
         if (req.notifyCallOnly() != null) {
             settings.putBool(SettingsService.TELEGRAM_NOTIFY_CALL_ONLY, req.notifyCallOnly());
         }
-        return new NotificationSettingsDto(telegram.isConfigured(),
-                settings.telegramNotifyEnabled(), settings.callOnlyNotifyEnabled());
+        if (req.telegramPublicOptIn() != null) {
+            settings.putBool(SettingsService.TELEGRAM_PUBLIC_OPTIN, req.telegramPublicOptIn());
+        }
+        return buildNotificationsDto();
+    }
+
+    private NotificationSettingsDto buildNotificationsDto() {
+        return new NotificationSettingsDto(telegram.isConfigured(), settings.telegramNotifyEnabled(),
+                settings.callOnlyNotifyEnabled(), settings.telegramPublicOptInEnabled());
     }
 
     /** The Telegram recipients (pending + confirmed) plus a shareable opt-in bot link. */
@@ -116,6 +124,21 @@ public class SettingsController {
                 .map(TelegramSubscriberDto::of)
                 .toList();
         return new TelegramSubscribersDto(botLink, telegramSubscribers.confirmedCount(), list);
+    }
+
+    /**
+     * Adds a recipient by chat id (operator action; independent of the public opt-in switch). The id
+     * is added as a confirmed recipient. Note: the bot can only deliver once that chat has messaged it
+     * at least once. An invalid id yields a 400.
+     */
+    @PostMapping("/telegram/subscribers")
+    public TelegramSubscribersDto addTelegramSubscriber(@RequestBody AddSubscriberRequest req) {
+        try {
+            telegramSubscribers.addManual(req.chatId());
+        } catch (IllegalArgumentException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
+        return getTelegramSubscribers();
     }
 
     /** Removes a recipient (opt-out). Idempotent; unknown ids are a no-op. */
@@ -154,7 +177,7 @@ public class SettingsController {
     /**
      * Updates the Umkreissuche. The centre may be given as a PLZ (geocoded offline against the bundled
      * dataset) or as explicit coordinates; an unknown PLZ is rejected with 400. Branches outside the
-     * radius are still scraped — only display and Telegram alerts are restricted.
+     * radius are still scraped - only display and Telegram alerts are restricted.
      */
     @PutMapping("/radius")
     public RadiusSettingsDto updateRadius(@RequestBody RadiusSettingsRequest req) {

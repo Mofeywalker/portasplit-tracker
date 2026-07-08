@@ -7,7 +7,7 @@ import de.wss.portasplit.domain.Product;
  * unavailable to available within the configured radius. Handled after the reconciliation transaction
  * commits by {@link ToomReserveVerifier}, which probes toom's real reserve gate
  * ({@code /shop/rest/V1/toom/basket/items/limited}) and only alerts when the article is genuinely
- * reservable — toom's public {@code buyboxcases} signal over-reports, so a flip alone is not proof
+ * reservable - toom's public {@code buyboxcases} signal over-reports, so a flip alone is not proof
  * that the pickup-reservation can actually be created.
  *
  * @param shopId      the branch shop id

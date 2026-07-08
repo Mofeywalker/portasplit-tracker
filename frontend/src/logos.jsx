@@ -1,7 +1,7 @@
 // Brand badges for the tracked stores. We intentionally don't bundle third-party store logos in
-// this repo (trademark/copyright — see README), so each chain gets a generic initials badge in a
+// this repo (trademark/copyright - see README), so each chain gets a generic initials badge in a
 // distinguishing color instead. `badgeFor` accepts either a shop `chain` ("Globus Baumarkt", "OBI")
-// or a job `type` ("GLOBUS", "OBI") — it matches loosely so shop names like "OBI Online" resolve too.
+// or a job `type` ("GLOBUS", "OBI") - it matches loosely so shop names like "OBI Online" resolve too.
 const BADGES = {
   BAUHAUS: { text: 'BH', bg: '#c8102e' },
   HORNBACH: { text: 'HB', bg: '#ec6602' },

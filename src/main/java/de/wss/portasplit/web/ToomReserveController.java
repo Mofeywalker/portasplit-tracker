@@ -22,7 +22,7 @@ import org.springframework.web.server.ResponseStatusException;
 /**
  * Dashboard control for the toom auto-reserve feature: on/off switch, credential entry (password is
  * encrypted at rest and never returned), and login. Login runs the browser Turnstile flow and can take
- * a few seconds — the caller shows a spinner.
+ * a few seconds - the caller shows a spinner.
  */
 @RestController
 @RequestMapping("/api/toom-reserve")

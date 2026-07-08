@@ -15,6 +15,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -103,5 +104,37 @@ class TelegramSubscriberServiceTest {
         service.unsubscribe("111");
         service.mergeSeed(List.of("111", "222"));
         assertEquals(List.of("222"), service.confirmedChatIds());  // 111 stays out, 222 seeded
+    }
+
+    @Test
+    void addManualCreatesConfirmedManualRecipient() {
+        service.addManual(" 555 ");   // whitespace is trimmed
+        assertEquals(State.CONFIRMED, store.get("555").getState());
+        assertEquals(Source.MANUAL, store.get("555").getSource());
+        assertEquals(List.of("555"), service.confirmedChatIds());
+        assertTrue(service.isConfirmed("555"));
+    }
+
+    @Test
+    void addManualReactivatesAnOptedOutRecipient() {
+        service.confirm("111", "Alice", "alice");
+        service.unsubscribe("111");
+        service.addManual("111");
+        assertTrue(service.isConfirmed("111"));
+    }
+
+    @Test
+    void addManualAcceptsNegativeGroupIdsAndRejectsGarbage() {
+        service.addManual("-1001234567890");
+        assertTrue(service.isConfirmed("-1001234567890"));
+        assertThrows(IllegalArgumentException.class, () -> service.addManual("abc"));
+        assertThrows(IllegalArgumentException.class, () -> service.addManual(""));
+    }
+
+    @Test
+    void isConfirmedIsFalseForPendingAndUnknown() {
+        service.onStart("111", "Bob", null);
+        assertFalse(service.isConfirmed("111"));  // pending, not confirmed
+        assertFalse(service.isConfirmed("999"));  // unknown
     }
 }

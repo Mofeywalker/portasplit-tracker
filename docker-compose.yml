@@ -8,7 +8,7 @@
 #
 # The app shares the cloakbrowser network namespace (network_mode: service:cloakbrowser) and
 # reaches the CDP server over loopback (http://localhost:9222). This is required: cloakserve
-# only accepts WebSocket upgrades carrying an Origin header over loopback — over a regular
+# only accepts WebSocket upgrades carrying an Origin header over loopback - over a regular
 # inter-container hostname it returns 403 (Tyrus/kklisura then fails with "Handshake error").
 # Because the namespace is shared, the app's 8080 port is published on the cloakbrowser service.
 #
@@ -18,7 +18,7 @@ services:
     image: cloakhq/cloakbrowser
     # Headed mode (rendered to Xvfb inside the container). CloakBrowser's docs note that some sites
     # detect headless even with its C++ patches; Cloudflare Turnstile (incl. managed challenges) only
-    # passes reliably in headed mode — required to get the Cloudflare-protected chains past the edge.
+    # passes reliably in headed mode - required to get the Cloudflare-protected chains past the edge.
     command: cloakserve --headless=false
     restart: unless-stopped
     ports:

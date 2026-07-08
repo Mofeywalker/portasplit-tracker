@@ -59,7 +59,7 @@ public class ShopInitializer implements ApplicationRunner {
             incoming.addAll(load(new FileSystemResource(configFile), "config"));
         }
 
-        // Seed all shops — including the scraped Amazon/Lidl rows — regardless of whether their
+        // Seed all shops - including the scraped Amazon/Lidl rows - regardless of whether their
         // checker is currently enabled. A source can be switched on at runtime from the dashboard, and
         // the checker then needs an enabled shop row to write to; gating is owned by the job queue
         // (CheckJobService.enabled), not by withholding the shop. A disabled source is simply not polled.
@@ -69,7 +69,7 @@ public class ShopInitializer implements ApplicationRunner {
         }
         int inserted = shopService.mergeIfMissing(incoming);
         // Existing rows (seeded before the Umkreissuche) carry no coordinates; enrich them from the seed
-        // so the radius filter can place them. Only fills blanks — dashboard edits are kept.
+        // so the radius filter can place them. Only fills blanks - dashboard edits are kept.
         int enriched = shopService.backfillCoordinates(incoming);
         log.info("Shop merge complete: {} candidate(s), {} newly inserted, {} enriched with coordinates",
                 incoming.size(), inserted, enriched);

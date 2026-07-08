@@ -3,7 +3,7 @@ package de.wss.portasplit.domain;
 import java.util.Locale;
 
 /**
- * Where a shop's availability data comes from — i.e. which checker polls it. {@link #AMAZON} and
+ * Where a shop's availability data comes from - i.e. which checker polls it. {@link #AMAZON} and
  * {@link #LIDL} shops are scraped from their product pages via a stealth browser; the remaining
  * values are the per-chain branch checkers (OBI, toom, …), each of which polls that chain's own
  * site/API for its branches and online shop.

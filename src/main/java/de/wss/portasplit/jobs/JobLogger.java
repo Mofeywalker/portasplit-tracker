@@ -10,7 +10,7 @@ import java.time.Instant;
 /**
  * Thread-bound sink that lets the low-level scrapers ({@link de.wss.portasplit.amazon.CloakBrowserClient}
  * and the per-source clients) record technical log lines into the {@link CheckJob} currently running on
- * this thread — without having to thread a job object through every method call.
+ * this thread - without having to thread a job object through every method call.
  *
  * <p>The {@link CheckJobService} worker calls {@link #begin(CheckJob)} before running a job and
  * {@link #end()} afterwards. Any {@code info/warn/...} call in between is appended to that job's logbook

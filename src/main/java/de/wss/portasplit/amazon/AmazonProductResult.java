@@ -7,7 +7,7 @@ import java.time.LocalDate;
  * Outcome of scraping one Amazon product page.
  *
  * @param ok               whether the page was loaded and parsed (false on navigation/scrape error
- *                         or a bot wall — the caller then leaves the known state untouched).
+ *                         or a bot wall - the caller then leaves the known state untouched).
  * @param error            error detail when {@code ok} is false.
  * @param inStock          buy box present / not "currently unavailable".
  * @param price            parsed price, or {@code null}.

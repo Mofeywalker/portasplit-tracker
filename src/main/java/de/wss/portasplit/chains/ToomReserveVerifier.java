@@ -183,7 +183,7 @@ public class ToomReserveVerifier {
     /**
      * Records that a real reservation attempt for this row was rejected, so the shop table can flag it
      * as "shows available, but reservation failed" independent of the regular availability poll (which
-     * would otherwise keep reporting it as plainly available). Not itself {@code @Transactional} — the
+     * would otherwise keep reporting it as plainly available). Not itself {@code @Transactional} - the
      * lookup returns a detached entity once its own read finishes, so the change is persisted explicitly
      * via {@code save()} rather than relying on dirty-checking (which self-invocation from an
      * {@code @TransactionalEventListener} method would silently bypass anyway).

@@ -30,7 +30,7 @@ public record AppProperties(
 
     /**
      * toom auto-reserve. Static config only; the feature on/off switch and the login credentials are
-     * runtime state (dashboard) — the switch lives in {@code SettingsService} and the credentials are
+     * runtime state (dashboard) - the switch lives in {@code SettingsService} and the credentials are
      * stored encrypted at rest. This feature is separate from scraping and requires a logged-in toom
      * account: an item added to the cart is only secured for a logged-in customer.
      *
@@ -122,7 +122,7 @@ public record AppProperties(
             @DefaultValue("false") boolean enabled,
             /**
              * A product counts as "available" only if its earliest delivery date is within this many
-             * days from now — guards against "in stock but ships in 1-2 months" listings.
+             * days from now - guards against "in stock but ships in 1-2 months" listings.
              */
             @DefaultValue("5") int maxDeliveryDays,
             /** If true, only count it as available when Prime/fast shipping is offered. */

@@ -29,7 +29,7 @@ function ErrorBox({ text }) {
       setCopied(true);
       setTimeout(() => setCopied(false), 1500);
     } catch {
-      // clipboard API unavailable/denied — nothing sensible to do, leave the button as-is.
+      // clipboard API unavailable/denied - nothing sensible to do, leave the button as-is.
     }
   };
 
@@ -78,7 +78,7 @@ function JobCard({ s, now, jobsAt, onToggle, onTrigger, busy }) {
           <p className="text-xs text-slate-400">Quelle ist deaktiviert.</p>
         ) : last ? (
           <>
-            <p className="text-xs text-slate-600 leading-snug">{last.summary || '—'}</p>
+            <p className="text-xs text-slate-600 leading-snug">{last.summary || '-'}</p>
             <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-slate-400">
               <span>{relative(last.finishedAt || last.startedAt)}</span>
               <span className="tabular-nums">⏱ {duration(last.durationMs)}</span>

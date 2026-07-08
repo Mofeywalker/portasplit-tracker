@@ -187,7 +187,7 @@ public class AvailabilityReconciler {
      * <em>branch</em> (market-pickup) with the reserve-verification feature on, this publishes a
      * {@link ToomBecameAvailableEvent} so {@link de.wss.portasplit.chains.ToomReserveVerifier} can
      * confirm the article is genuinely reservable before alerting (toom's buybox signal over-reports);
-     * for every other shop — and for toom when the feature is off — it sends the plain notification.
+     * for every other shop - and for toom when the feature is off - it sends the plain notification.
      */
     private void fireAvailabilityAlert(Shop shop, Product product, Integer newStock, BigDecimal price,
                                        ProductAvailability state) {

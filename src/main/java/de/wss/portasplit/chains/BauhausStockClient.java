@@ -141,7 +141,7 @@ public class BauhausStockClient implements ChainStockClient {
                 int qty = entry.path("available_quantity").asInt(0);
                 String status = entry.path("status").asText("");
                 if (qty <= 0) {
-                    // Definitively out of stock — nothing to reserve; clear any prior reserve-issue note.
+                    // Definitively out of stock - nothing to reserve; clear any prior reserve-issue note.
                     readings.add(new ChainReading(shopId, p, new AvailabilitySnapshot(
                             true, true, false, 0, null, url, System.currentTimeMillis(),
                             statusText(status), true, null)));

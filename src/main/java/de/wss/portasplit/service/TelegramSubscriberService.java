@@ -44,6 +44,42 @@ public class TelegramSubscriberService {
         return repo.countByState(State.CONFIRMED);
     }
 
+    /** Whether this chat is currently a confirmed recipient. */
+    @Transactional(readOnly = true)
+    public boolean isConfirmed(String chatId) {
+        return repo.findById(chatId).map(s -> s.getState() == State.CONFIRMED).orElse(false);
+    }
+
+    /**
+     * Adds a recipient the operator entered by chat id in the settings UI: creates it as a confirmed
+     * {@link Source#MANUAL} subscriber, or reactivates an opted-out one. The id must be a Telegram
+     * chat id (an integer, optionally negative for groups/channels); anything else throws.
+     *
+     * <p>Note: the bot can only actually deliver to a chat that has messaged it at least once — adding
+     * the id here registers the recipient, but the person still has to open the bot for messages to
+     * arrive. Returns the (created or updated) subscriber.
+     */
+    @Transactional
+    public TelegramSubscriber addManual(String chatId) {
+        String normalized = normalizeChatId(chatId);
+        TelegramSubscriber s = repo.findById(normalized).orElseGet(() -> {
+            TelegramSubscriber n = new TelegramSubscriber(normalized);
+            n.setSource(Source.MANUAL);
+            return n;
+        });
+        s.setState(State.CONFIRMED);
+        touch(s);
+        return repo.save(s);
+    }
+
+    private static String normalizeChatId(String raw) {
+        String v = raw == null ? "" : raw.trim();
+        if (!v.matches("-?\\d+")) {
+            throw new IllegalArgumentException("Ungültige Chat-ID: „" + raw + "“ (nur Zahlen, optional mit -)");
+        }
+        return v;
+    }
+
     /** All subscribers except opted-out tombstones, oldest first (for the settings UI). */
     @Transactional(readOnly = true)
     public List<TelegramSubscriber> activeSubscribers() {

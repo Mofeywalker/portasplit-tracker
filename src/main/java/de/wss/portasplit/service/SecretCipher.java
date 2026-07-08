@@ -12,7 +12,7 @@ import java.util.Base64;
 
 /**
  * AES-GCM encryption for a small secret stored at rest (the toom account password). The key comes
- * from {@code app.toom-reserve.crypto-key} (Base64, 16/24/32 bytes) — never from source. Output is
+ * from {@code app.toom-reserve.crypto-key} (Base64, 16/24/32 bytes) - never from source. Output is
  * {@code Base64(iv‖ciphertext‖tag)}. When no key is configured, {@link #isConfigured()} is false and
  * the credential-backed feature stays disabled rather than storing anything in the clear.
  */

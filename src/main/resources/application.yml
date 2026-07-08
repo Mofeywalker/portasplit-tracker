@@ -46,7 +46,7 @@ app:
     bot-token: ${TELEGRAM_BOT_TOKEN:}
     # Startup SEED for the recipient list: one chat id, or several separated by commas (e.g. 111,222).
     # These are merged into the DB as confirmed recipients on boot (only if not already present).
-    # At runtime, recipients manage themselves via the bot (/start + confirm, /stop) — the DB is the
+    # At runtime, recipients manage themselves via the bot (/start + confirm, /stop) - the DB is the
     # source of truth, so a later /stop is not undone by this seed on the next restart.
     chat-id: ${TELEGRAM_CHAT_ID:}
     api-base: https://api.telegram.org
@@ -86,7 +86,7 @@ app:
     initial-delay-ms: 45000     # first Lidl poll 45s after startup
   kleinanzeigen:
     # Watches a kleinanzeigen.de search-results URL and notifies on a freshly-posted offer only.
-    # Requires the CloakBrowser. The watcher is enabled precisely when a URL is configured — set it
+    # Requires the CloakBrowser. The watcher is enabled precisely when a URL is configured - set it
     # here via KLEINANZEIGEN_URL or at runtime from the settings page. No URL → disabled.
     # (The legacy KLEINANZEIGEN_ENABLED flag is no longer consulted; the URL is the on/off switch.)
     enabled: ${KLEINANZEIGEN_ENABLED:false}
@@ -99,13 +99,13 @@ app:
 
   # toom auto-reserve (separate feature from scraping; on/off + credentials are set at runtime from the
   # dashboard). Requires a logged-in toom account; the password is encrypted at rest with this key.
-  # Generate a key with:  openssl rand -base64 32   — and put it in .env as RESERVE_CRYPTO_KEY.
+  # Generate a key with:  openssl rand -base64 32   - and put it in .env as RESERVE_CRYPTO_KEY.
   # Without a key the feature stays disabled (nothing is stored in the clear).
   toom-reserve:
     fingerprint-seed: ${TOOM_RESERVE_FINGERPRINT_SEED:55268}
     crypto-key: ${RESERVE_CRYPTO_KEY:}
 
-  # Per-chain branch checkers (direct to the chain's own API/site) — the availability scrapers.
+  # Per-chain branch checkers (direct to the chain's own API/site) - the availability scrapers.
   # OBI/toom/Globus are plain JSON APIs; Hornbach (listing-watcher) and Bauhaus (CloakBrowser) are
   # operational and on by default. Only Hagebau is off (store-id mapping TODO).
   hagebau:

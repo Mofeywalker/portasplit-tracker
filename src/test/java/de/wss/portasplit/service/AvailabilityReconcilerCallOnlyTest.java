@@ -25,7 +25,7 @@ import static org.mockito.Mockito.when;
 
 /**
  * The opt-in "call-only" alert path: a branch that shows pickup stock it cannot reserve online
- * (available=false, reserve-issue note set, stock &gt; 0) fires {@code notifyCallOnly} — but only on
+ * (available=false, reserve-issue note set, stock &gt; 0) fires {@code notifyCallOnly} - but only on
  * the transition into that state, only when the feature is enabled, and only inside the radius.
  */
 class AvailabilityReconcilerCallOnlyTest {

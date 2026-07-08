@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * toom per-branch availability via toom's public JSON API (api.toom.de — no bot protection, no auth).
+ * toom per-branch availability via toom's public JSON API (api.toom.de - no bot protection, no auth).
  * Maps branches → market_id via {@code /public/api/markets}, then asks for all (market, product) pairs
  * in a single {@code POST /public/v1/buyboxcases}. In-stock ⇔ response {@code state == "available"}.
  */
@@ -136,7 +136,7 @@ public class ToomStockClient implements ChainStockClient {
     /**
      * toom's own online shop has no directly scrapable availability signal: the SPA product page
      * answers 404 for the bare {@code /p/_/{sap}} URL and carries no schema.org {@code Offer}, and the
-     * public buyboxcases API only reports per-market pickup stock — not nationwide online delivery.
+     * public buyboxcases API only reports per-market pickup stock - not nationwide online delivery.
      * This override therefore returns <em>not-observed</em> for each product (state is never flipped,
      * last known value kept) and logs the limitation, so the gap is an explicit, documented decision
      * rather than a silent omission.

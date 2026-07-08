@@ -114,6 +114,8 @@ export default function SettingsModal({
   const [subs, setSubs] = useState(null);
   const [subBusy, setSubBusy] = useState(null); // chatId currently being removed
   const [copied, setCopied] = useState(false);
+  const [newSubId, setNewSubId] = useState('');
+  const [addBusy, setAddBusy] = useState(false);
 
   const [radius, setRadius] = useState(null);
   const [radiusBusy, setRadiusBusy] = useState(false);
@@ -213,6 +215,37 @@ export default function SettingsModal({
       toast('Speichern fehlgeschlagen: ' + e.message, 'error');
     } finally {
       setNotifBusy(false);
+    }
+  };
+
+  const setPublicOptIn = async (value) => {
+    setNotifBusy(true);
+    setNotif((n) => ({ ...n, telegramPublicOptIn: value })); // optimistic
+    try {
+      const r = await api('/api/settings/notifications', { method: 'PUT', body: JSON.stringify({ telegramPublicOptIn: value }) });
+      setNotif(r);
+      toast(`Öffentlicher /start-Opt-in ${value ? 'aktiviert' : 'deaktiviert'}`, 'info');
+    } catch (e) {
+      setNotif((n) => ({ ...n, telegramPublicOptIn: !value }));
+      toast('Speichern fehlgeschlagen: ' + e.message, 'error');
+    } finally {
+      setNotifBusy(false);
+    }
+  };
+
+  const addSubscriber = async () => {
+    const id = newSubId.trim();
+    if (!id) { toast('Bitte eine Chat-ID eingeben', 'info'); return; }
+    setAddBusy(true);
+    try {
+      const r = await api('/api/settings/telegram/subscribers', { method: 'POST', body: JSON.stringify({ chatId: id }) });
+      setSubs(r); setNewSubId('');
+      api('/api/settings/notifications').then(setNotif).catch(() => {});
+      toast('Empfänger hinzugefügt', 'success');
+    } catch (e) {
+      toast('Hinzufügen fehlgeschlagen: ' + e.message, 'error');
+    } finally {
+      setAddBusy(false);
     }
   };
 
@@ -353,7 +386,7 @@ export default function SettingsModal({
               </div>
             </div>
 
-            {/* Empfänger: self-service opt-in via the bot + who currently receives alerts. */}
+            {/* Empfänger: manage recipients + the (opt-in) public self-service flow. */}
             <div className="mt-3">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-xs font-bold text-slate-500 uppercase tracking-wide">
@@ -361,8 +394,22 @@ export default function SettingsModal({
                 </span>
               </div>
 
-              {/* Share link: anyone who opens it and confirms in the bot becomes a recipient. */}
-              {subs?.botLink && (
+              {/* Public opt-in switch: when off, the bot ignores strangers entirely. */}
+              <div className="rounded-xl ring-1 ring-slate-200 mb-2">
+                <div className="flex items-center justify-between gap-4 px-3.5 py-3">
+                  <div className="min-w-0">
+                    <div className="text-sm font-semibold text-slate-800">Öffentlicher Opt-in per /start</div>
+                    <p className="text-xs text-slate-400 leading-snug">
+                      An: jeder, der dem Bot <b>/start</b> schickt und bestätigt, wird Empfänger.
+                      Aus: der Bot ignoriert Fremde – Empfänger nur per ID (unten) oder Env.
+                    </p>
+                  </div>
+                  <Switch checked={!!notif?.telegramPublicOptIn} disabled={notifBusy || notif === null} onChange={setPublicOptIn} accent="sky" />
+                </div>
+              </div>
+
+              {/* Share link only makes sense while public opt-in is on. */}
+              {notif?.telegramPublicOptIn && subs?.botLink && (
                 <div className="flex items-center gap-2 rounded-lg bg-sky-50 ring-1 ring-sky-100 px-3 py-2 mb-2">
                   <Telegram className="h-4 w-4 text-sky-500 shrink-0" />
                   <a href={subs.botLink} target="_blank" rel="noreferrer"
@@ -375,8 +422,20 @@ export default function SettingsModal({
                   </button>
                 </div>
               )}
+
+              {/* Add a recipient by chat id (works regardless of the public opt-in switch). */}
+              <div className="flex items-center gap-2 mb-2">
+                <input value={newSubId} onChange={(e) => setNewSubId(e.target.value)} inputMode="numeric"
+                  onKeyDown={(e) => { if (e.key === 'Enter') addSubscriber(); }}
+                  placeholder="Chat-ID hinzufügen, z. B. 987654321"
+                  className="flex-1 min-w-0 rounded-lg bg-white ring-1 ring-slate-200 focus:ring-2 focus:ring-brand-400 outline-none px-3 py-2 text-sm text-slate-700 tabular-nums" />
+                <button onClick={addSubscriber} disabled={addBusy || !newSubId.trim()}
+                  className="shrink-0 rounded-lg bg-brand-500 hover:bg-brand-600 disabled:opacity-40 px-3.5 py-2 text-sm font-semibold text-white shadow-sm transition">
+                  {addBusy ? '…' : 'Hinzufügen'}
+                </button>
+              </div>
               <p className="text-[11px] text-slate-400 mb-2 leading-snug">
-                Teile den Link. Wer dem Bot <b>/start</b> schickt und bestätigt, bekommt Alarme. Abmelden per <b>/stop</b>.
+                Chat-ID = Nutzer-ID (z. B. via @userinfobot). Der Empfänger muss dem Bot einmal geschrieben haben, damit Nachrichten ankommen.
               </p>
 
               <div className="rounded-xl ring-1 ring-slate-200 divide-y divide-slate-100">
@@ -384,7 +443,7 @@ export default function SettingsModal({
                   <div className="px-3.5 py-3 text-xs text-slate-400">Lade Empfänger…</div>
                 ) : subs.subscribers.length === 0 ? (
                   <div className="px-3.5 py-3 text-xs text-slate-400">
-                    Noch keine Empfänger. Teile den Link oben oder setze TELEGRAM_CHAT_ID.
+                    Noch keine Empfänger. Füge oben eine Chat-ID hinzu, setze TELEGRAM_CHAT_ID oder aktiviere den öffentlichen Opt-in.
                   </div>
                 ) : (
                   subs.subscribers.map((s) => {
@@ -395,7 +454,7 @@ export default function SettingsModal({
                         <div className="min-w-0">
                           <div className="text-sm font-semibold text-slate-800 truncate">
                             {s.displayName}
-                            {s.source === 'ENV' && <span className="ml-1.5 rounded bg-slate-100 text-slate-500 ring-1 ring-slate-200 px-1.5 py-0.5 text-[9px] font-bold align-middle">ENV</span>}
+                            {(s.source === 'ENV' || s.source === 'MANUAL') && <span className="ml-1.5 rounded bg-slate-100 text-slate-500 ring-1 ring-slate-200 px-1.5 py-0.5 text-[9px] font-bold align-middle">{s.source}</span>}
                           </div>
                           <div className="text-[11px] text-slate-400 truncate tabular-nums">
                             {confirmed ? 'Bestätigt' : 'Wartet auf Bestätigung'} · {s.chatId}

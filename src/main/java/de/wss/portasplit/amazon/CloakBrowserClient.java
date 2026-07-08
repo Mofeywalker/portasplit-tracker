@@ -79,8 +79,8 @@ public class CloakBrowserClient {
      * then repeatedly evaluates {@code extractionJs} (an IIFE returning a {@code JSON.stringify(...)}
      * string that includes a boolean {@code ready} field) until it reports ready or the readiness
      * window elapses, and returns the parsed map. The per-seed context keeps a site's session "warm"
-     * — accepted cookie-consent and any anti-bot clearance persist across polls instead of being
-     * clobbered by the other scrapers — and lets different sources scrape concurrently (one tab each,
+     * - accepted cookie-consent and any anti-bot clearance persist across polls instead of being
+     * clobbered by the other scrapers - and lets different sources scrape concurrently (one tab each,
      * serialized only against other calls using the same seed).
      *
      * @return the parsed extraction result, or {@code null} if the page could not be scraped.
@@ -561,7 +561,7 @@ public class CloakBrowserClient {
                     + "catch(e){return JSON.stringify({status:-1,err:String((e&&e.message)||e)});}})()";
             InPageResponse typeResp = evalAsyncJson(runtime, typeJs, timeoutMs);
 
-            // NOTE: the login JS embeds the password — never log this string.
+            // NOTE: the login JS embeds the password - never log this string.
             String loginJs = "(async()=>{try{"
                     + "const r=await fetch(" + objectMapper.writeValueAsString(loginPath) + ",{method:'POST',"
                     + "headers:{'Content-Type':'application/json','Accept':'application/json','X-Requested-With':'XMLHttpRequest'},"
@@ -620,7 +620,7 @@ public class CloakBrowserClient {
     private ChromeTab fingerprintTab(String host, int port, int seed) throws Exception {
         // Bound both connect and request by the configured timeout: if the CloakBrowser is down, this
         // fails fast instead of hanging the worker (and holding its per-seed lock) on the OS connect
-        // timeout — important now that each source runs on its own worker.
+        // timeout - important now that each source runs on its own worker.
         HttpClient http = HttpClient.newBuilder()
                 .connectTimeout(props.cloakbrowser().timeout())
                 .build();

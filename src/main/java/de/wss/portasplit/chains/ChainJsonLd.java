@@ -15,7 +15,7 @@ import java.util.regex.Pattern;
 /**
  * Shared parser for a chain's <em>online</em> availability, read from the schema.org {@code Offer}
  * embedded as JSON-LD in the product page. This is the one signal that is reliable across chains and
- * for freight ("Spedition") articles — a chain's own stock API often only reports parcel/pickup, where
+ * for freight ("Spedition") articles - a chain's own stock API often only reports parcel/pickup, where
  * a large item shows up as empty even while it is orderable online. Used by every per-chain
  * {@code checkOnline} (OBI/Globus via plain HTTP, Bauhaus/Hornbach via the CloakBrowser).
  */

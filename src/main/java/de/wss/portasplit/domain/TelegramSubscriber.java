@@ -1,9 +1,8 @@
 package de.wss.portasplit.domain;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
@@ -23,7 +22,7 @@ public class TelegramSubscriber {
     public enum State {
         /** Sent {@code /start} but has not pressed the confirm button yet. */
         PENDING,
-        /** Confirmed — receives notifications. */
+        /** Confirmed - receives notifications. */
         CONFIRMED,
         /** Opted out via {@code /stop} or removed in the UI. Kept as a tombstone so the env seed
          *  merge does not silently re-subscribe them on the next restart. */
@@ -34,8 +33,10 @@ public class TelegramSubscriber {
     public enum Source {
         /** Seeded from the {@code TELEGRAM_CHAT_ID} env config. */
         ENV,
-        /** Self-service opt-in through the bot. */
-        BOT
+        /** Self-service opt-in through the bot ({@code /start} + confirm). */
+        BOT,
+        /** Added by the operator in the settings UI by entering a chat id. */
+        MANUAL
     }
 
     /** The Telegram chat id (== user id for a private chat); the value we send messages to. */
@@ -43,11 +44,11 @@ public class TelegramSubscriber {
     @Column(name = "chat_id", length = 64)
     private String chatId;
 
-    @Enumerated(EnumType.STRING)
+    @Convert(converter = TelegramSubscriberStateConverter.class)
     @Column(name = "state", length = 16, nullable = false)
     private State state = State.PENDING;
 
-    @Enumerated(EnumType.STRING)
+    @Convert(converter = TelegramSubscriberSourceConverter.class)
     @Column(name = "source", length = 16, nullable = false)
     private Source source = Source.BOT;
 

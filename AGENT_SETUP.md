@@ -1,4 +1,4 @@
-# PortaSplit Tracker — Geführte Installation für KI-Agenten
+# PortaSplit Tracker - Geführte Installation für KI-Agenten
 
 > **Diese Datei ist für einen KI-Coding-Agenten (Claude Code, Claude Cowork, opencode, Cursor,
 > Aider o. Ä.) geschrieben, nicht primär für Menschen.** Wenn du ein solcher Agent bist:
@@ -10,7 +10,7 @@
 
 | Symbol | Bedeutung |
 | --- | --- |
-| 🧑 **Frage** | Eingabe/Entscheidung des Nutzers nötig — anhalten und fragen. |
+| 🧑 **Frage** | Eingabe/Entscheidung des Nutzers nötig - anhalten und fragen. |
 | ▶️ **Aktion** | Befehl, den *du als Agent* ausführst. |
 | ✅ **Prüfen** | Erfolgskriterium; erst weiter, wenn erfüllt. |
 | ⚠️ | Häufige Fehlerquelle / Sicherheitshinweis. |
@@ -21,21 +21,21 @@ Eine kleine Spring-Boot-App mit React-Dashboard, die die Verfügbarkeit der **Mi
 (und *PortaSplit Cool*) bei mehreren Baumärkten, Amazon, Lidl und kleinanzeigen.de überwacht und
 bei Verfügbarkeit eine **Telegram**-Nachricht schickt. Der Stack besteht aus zwei Teilen:
 
-1. **cloakbrowser** — ein Stealth-Chromium als CDP-Server (Docker-Image `cloakhq/cloakbrowser`),
+1. **cloakbrowser** - ein Stealth-Chromium als CDP-Server (Docker-Image `cloakhq/cloakbrowser`),
    das Bot-Schutz (u. a. Cloudflare Turnstile) umgeht. Nötig für Amazon, Lidl, kleinanzeigen und
    die Cloudflare-geschützten Ketten.
-2. **app** — der Tracker selbst. Dashboard nach dem Start unter **http://localhost:8080**.
+2. **app** - der Tracker selbst. Dashboard nach dem Start unter **http://localhost:8080**.
 
 Datenbank ist eine SQLite-Datei unter `./data/portasplit.db` (wird automatisch angelegt).
 
 ---
 
-## Phase 0 — Umgebung prüfen & Installationsweg wählen
+## Phase 0 - Umgebung prüfen & Installationsweg wählen
 
 Es gibt zwei Wege. **Docker ist empfohlen** (baut Frontend + Backend + CloakBrowser in einem
 Rutsch, keine lokale JDK/Node-Installation nötig).
 
-▶️ **Aktion:** Verfügbare Tools ermitteln (Fehler einzelner Befehle sind ok — sie zeigen nur, was
+▶️ **Aktion:** Verfügbare Tools ermitteln (Fehler einzelner Befehle sind ok - sie zeigen nur, was
 fehlt):
 
 ```bash
@@ -50,9 +50,9 @@ oder **lokal mit Maven** starten?"
 
 Entscheidungshilfe:
 
-- **Weg A — Docker** (empfohlen): braucht nur Docker + Docker Compose. CloakBrowser läuft
+- **Weg A - Docker** (empfohlen): braucht nur Docker + Docker Compose. CloakBrowser läuft
   automatisch mit. → weiter bei **Phase 1**, dann **Phase 2A**.
-- **Weg B — Maven**: braucht **JDK 21+** und **Maven 3.9+** lokal. Node wird beim Build vom
+- **Weg B - Maven**: braucht **JDK 21+** und **Maven 3.9+** lokal. Node wird beim Build vom
   `frontend-maven-plugin` automatisch heruntergeladen (Node v22.12.0), muss also *nicht* installiert
   sein. CloakBrowser muss trotzdem als Docker-Container laufen. → weiter bei **Phase 1**, dann
   **Phase 2B**.
@@ -62,7 +62,7 @@ konkret, was zu installieren ist (Docker Desktop **oder** Temurin JDK 21 + Maven
 
 ---
 
-## Phase 1 — Quellcode besorgen
+## Phase 1 - Quellcode besorgen
 
 ▶️ **Aktion:** Prüfe, ob du bereits im Projektverzeichnis bist:
 
@@ -79,7 +79,7 @@ liegen im aktuellen Verzeichnis.
 
 ---
 
-## Phase 2 — Geheimnisse einsammeln (Telegram & Optionales)
+## Phase 2 - Geheimnisse einsammeln (Telegram & Optionales)
 
 Diese Werte kommen **vom Nutzer** und dürfen **niemals** committet werden (`.env` und
 `local.properties` sind in `.gitignore`).
@@ -128,7 +128,7 @@ Nutzer **später im Dashboard** ein (Phase 5), nicht hier.
 
 ---
 
-## Phase 2A — Konfiguration schreiben (Docker-Weg)
+## Phase 2A - Konfiguration schreiben (Docker-Weg)
 
 ▶️ **Aktion:** `.env` aus der Vorlage erzeugen (falls noch nicht vorhanden) und die Werte aus
 Phase 2 eintragen. Vorlage:
@@ -141,7 +141,7 @@ RESERVE_CRYPTO_KEY=
 
 Vorgehen:
 
-1. `cp .env.example .env` (nur wenn `.env` noch nicht existiert — vorhandene `.env` **nicht**
+1. `cp .env.example .env` (nur wenn `.env` noch nicht existiert - vorhandene `.env` **nicht**
    überschreiben, sondern gezielt editieren).
 2. `TELEGRAM_BOT_TOKEN` und `TELEGRAM_CHAT_ID` mit den echten Werten füllen.
 3. Optional `RESERVE_CRYPTO_KEY` setzen (aus 2.3).
@@ -149,7 +149,7 @@ Vorgehen:
    gewünscht.
 
 ℹ️ Hinweis: `docker-compose.yml` setzt `TELEGRAM_ENABLED`, `AMAZON_ENABLED` und `LIDL_ENABLED` fest
-auf `true` — im Docker-Weg sind Telegram, Amazon und Lidl also standardmäßig aktiv, sobald die
+auf `true` - im Docker-Weg sind Telegram, Amazon und Lidl also standardmäßig aktiv, sobald die
 Secrets in `.env` stehen.
 
 ✅ **Prüfen:** `.env` enthält Token und Chat-ID; keine Beispiel-Platzhalter (`AA-your-bot-token`)
@@ -157,7 +157,7 @@ mehr. → weiter zu **Phase 3A**.
 
 ---
 
-## Phase 2B — Konfiguration schreiben (Maven-Weg)
+## Phase 2B - Konfiguration schreiben (Maven-Weg)
 
 ▶️ **Aktion:** `local.properties` aus der Vorlage erzeugen und füllen. Diese Datei wird beim Start
 automatisch über `spring.config.import` geladen.
@@ -188,7 +188,7 @@ diese Checks ohne Ergebnis.
 
 ---
 
-## Phase 3A — Starten (Docker-Weg)
+## Phase 3A - Starten (Docker-Weg)
 
 ▶️ **Aktion:**
 
@@ -229,7 +229,7 @@ zu **Phase 4**.
 
 ---
 
-## Phase 3B — Starten (Maven-Weg)
+## Phase 3B - Starten (Maven-Weg)
 
 ▶️ **Aktion:** Zuerst den CloakBrowser als Container starten, dann die App lokal:
 
@@ -252,7 +252,7 @@ Die SQLite-Datei erscheint automatisch unter `./data/portasplit.db`. → weiter 
 
 ---
 
-## Phase 4 — Funktion verifizieren
+## Phase 4 - Funktion verifizieren
 
 ▶️ **Aktion:** Dashboard öffnen bzw. abrufen:
 
@@ -271,7 +271,7 @@ drücken. Es sollte eine Testnachricht im Telegram-Chat ankommen.
 
 ---
 
-## Phase 5 — Laufzeit-Konfiguration im Dashboard (optional)
+## Phase 5 - Laufzeit-Konfiguration im Dashboard (optional)
 
 Diese Dinge werden **nicht** über Dateien, sondern zur Laufzeit im Dashboard eingestellt:
 
@@ -317,9 +317,9 @@ standardmäßig aktiv; **Hagebau** ist aus. Änderungen dort nur bei Bedarf.
 
 | Symptom | Ursache & Lösung |
 | --- | --- |
-| `Bind for 0.0.0.0:8080 failed: port is already allocated` | Port 8080 belegt. Anderen Dienst stoppen **oder** `SERVER_PORT` ändern. Im Docker-Weg wird 8080 vom **cloakbrowser**-Service veröffentlicht (geteilter Netzwerk-Namespace) — dort das Port-Mapping anpassen, nicht am `app`-Service. |
-| `Handshake error` / CDP `403` beim Verbinden zum CloakBrowser | Der CDP-Server akzeptiert WebSocket-Upgrades nur über **loopback** mit Origin-Header. Im Docker-Weg teilt sich `app` bewusst den Netzwerk-Namespace des CloakBrowsers (`network_mode: service:cloakbrowser`) und erreicht ihn über `http://localhost:9222` — dieses Setup nicht verändern. Im Maven-Weg muss `CLOAKBROWSER_CDP_URL=http://localhost:9222` zeigen und der Container laufen. |
-| Cloudflare/Turnstile blockt weiterhin | CloakBrowser läuft absichtlich **headed** (`cloakserve --headless=false` via Xvfb) — headless wird oft erkannt. Diese Zeile in `docker-compose.yml` nicht auf headless umstellen. Blocks können intermittierend auftreten; das Failover fängt das meist ab. |
+| `Bind for 0.0.0.0:8080 failed: port is already allocated` | Port 8080 belegt. Anderen Dienst stoppen **oder** `SERVER_PORT` ändern. Im Docker-Weg wird 8080 vom **cloakbrowser**-Service veröffentlicht (geteilter Netzwerk-Namespace) - dort das Port-Mapping anpassen, nicht am `app`-Service. |
+| `Handshake error` / CDP `403` beim Verbinden zum CloakBrowser | Der CDP-Server akzeptiert WebSocket-Upgrades nur über **loopback** mit Origin-Header. Im Docker-Weg teilt sich `app` bewusst den Netzwerk-Namespace des CloakBrowsers (`network_mode: service:cloakbrowser`) und erreicht ihn über `http://localhost:9222` - dieses Setup nicht verändern. Im Maven-Weg muss `CLOAKBROWSER_CDP_URL=http://localhost:9222` zeigen und der Container laufen. |
+| Cloudflare/Turnstile blockt weiterhin | CloakBrowser läuft absichtlich **headed** (`cloakserve --headless=false` via Xvfb) - headless wird oft erkannt. Diese Zeile in `docker-compose.yml` nicht auf headless umstellen. Blocks können intermittierend auftreten; das Failover fängt das meist ab. |
 | `database is locked` | SQLite erlaubt nur einen Writer; der Pool ist deshalb auf 1 begrenzt. Nicht zwei App-Instanzen gleichzeitig auf dieselbe `.db` laufen lassen. |
 | Keine Telegram-Nachricht | 1) `TELEGRAM_ENABLED=true`? 2) Token/Chat-ID korrekt und ohne Platzhalter? 3) Hat der Nutzer dem Bot mindestens einmal geschrieben? 4) `getUpdates` erneut prüfen. |
 | `getUpdates` liefert leeres `result` | Der Nutzer muss dem Bot **zuerst** eine Nachricht senden, dann erneut abrufen. |

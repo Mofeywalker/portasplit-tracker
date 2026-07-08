@@ -64,7 +64,7 @@ public class NotificationService {
     }
 
     /**
-     * Fired when a product appears in a branch with pickup stock that cannot be reserved online — the
+     * Fired when a product appears in a branch with pickup stock that cannot be reserved online - the
      * only way to secure it is by phone/in person (e.g. Bauhaus freight items). Distinct from
      * {@link #notifyAvailable}: opt-in via {@code SettingsService.callOnlyNotifyEnabled()}.
      */
@@ -73,7 +73,7 @@ public class NotificationService {
         StringBuilder sb = new StringBuilder();
         sb.append("🟡 <b>").append(TelegramService.escape(product.displayName()))
                 .append(" im Markt vorrätig</b>\n");
-        sb.append("<i>nur telefonisch / vor Ort reservierbar — online nicht möglich</i>\n\n");
+        sb.append("<i>nur telefonisch / vor Ort reservierbar - online nicht möglich</i>\n\n");
         sb.append("🏬 ").append(TelegramService.escape(shop.getName())).append('\n');
         if (StringUtils.hasText(shop.getCity())) {
             sb.append("📍 ")

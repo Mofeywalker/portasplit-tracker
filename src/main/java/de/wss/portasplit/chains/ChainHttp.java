@@ -13,7 +13,7 @@ import java.util.zip.GZIPInputStream;
 
 /**
  * Small helpers for the RestClient-based chain checkers: browser-like headers, absolute URLs, and
- * manual gzip handling (some chain APIs — e.g. api.toom.de — always gzip, and the JDK HttpClient
+ * manual gzip handling (some chain APIs - e.g. api.toom.de - always gzip, and the JDK HttpClient
  * behind RestClient does not transparently decode it).
  */
 final class ChainHttp {

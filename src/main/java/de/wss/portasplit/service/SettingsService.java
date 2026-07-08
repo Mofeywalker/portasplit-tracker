@@ -33,8 +33,14 @@ public class SettingsService {
      * standard behaviour stays "only notify on genuinely online-reservable stock".
      */
     public static final String TELEGRAM_NOTIFY_CALL_ONLY = "telegram.notifyCallOnly";
-    /** Highest processed Telegram {@code update_id} + 1 — the getUpdates poll offset (survives restarts). */
+    /** Highest processed Telegram {@code update_id} + 1 - the getUpdates poll offset (survives restarts). */
     public static final String TELEGRAM_UPDATES_OFFSET = "telegram.updates.offset";
+    /**
+     * Whether strangers may self-subscribe by sending {@code /start} to the bot. Off by default: the
+     * bot stays private and new recipients are added only via the env seed or the settings UI. When on,
+     * anyone who messages the bot can opt in.
+     */
+    public static final String TELEGRAM_PUBLIC_OPTIN = "telegram.publicOptIn";
 
     // --- toom auto-reserve (separate feature from scraping; requires a logged-in toom account) ------
     /** Runtime on/off switch for the toom auto-reserve feature. Default off. */
@@ -87,7 +93,7 @@ public class SettingsService {
     /**
      * Whether Telegram notifications should be sent. A runtime override set from the settings page
      * takes precedence; when unset it defaults to {@code true} (i.e. send whenever Telegram is
-     * configured). This only gates automatic alerts — the explicit "Telegram testen" action ignores it.
+     * configured). This only gates automatic alerts - the explicit "Telegram testen" action ignores it.
      */
     public boolean telegramNotifyEnabled() {
         return get(TELEGRAM_NOTIFY).map(Boolean::parseBoolean).orElse(true);
@@ -96,6 +102,15 @@ public class SettingsService {
     /** Whether the toom auto-reserve feature is switched on (dashboard). Defaults to off. */
     public boolean toomAutoReserveEnabled() {
         return get(TOOM_AUTORESERVE_ENABLED).map(Boolean::parseBoolean).orElse(false);
+    }
+
+    /**
+     * Whether strangers may self-subscribe via {@code /start}. Off by default — the bot then ignores
+     * messages from anyone who is not already a recipient, and new recipients are added only via the
+     * env seed or the settings UI.
+     */
+    public boolean telegramPublicOptInEnabled() {
+        return get(TELEGRAM_PUBLIC_OPTIN).map(Boolean::parseBoolean).orElse(false);
     }
 
     /**

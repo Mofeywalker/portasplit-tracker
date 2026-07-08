@@ -69,7 +69,7 @@ public record ProductStatusDto(
 
     /**
      * A reading is stale when it has been observed at least once but the latest check attempt did not
-     * produce a reading — i.e. {@code lastCheckedAt} has pulled ahead of {@code lastObservedAt}. This
+     * produce a reading - i.e. {@code lastCheckedAt} has pulled ahead of {@code lastObservedAt}. This
      * is threshold-free and self-clearing: the next successful observation brings the two back in sync.
      */
     private static boolean isStale(ProductAvailability a) {

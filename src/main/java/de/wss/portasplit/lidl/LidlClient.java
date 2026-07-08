@@ -68,7 +68,7 @@ public class LidlClient {
         boolean addToCart = Boolean.TRUE.equals(data.get("addToCart"));
         boolean soldOut = Boolean.TRUE.equals(data.get("soldOut"));
         if (!addToCart && !soldOut) {
-            // No definitive signal this run — don't flip the known state.
+            // No definitive signal this run - don't flip the known state.
             return AvailabilitySnapshot.notObserved();
         }
         boolean available = addToCart && !soldOut;

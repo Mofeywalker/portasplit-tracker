@@ -79,7 +79,7 @@ public class ProductAvailability {
      * When this (shop, product) was last <em>successfully observed</em> (i.e. a run produced a
      * definitive reading). Unlike {@link #lastCheckedAt}, which advances on every attempt, this only
      * advances when a reading was actually obtained. If {@code lastCheckedAt} is newer than this, the
-     * most recent check(s) failed to read the article — it can no longer be updated (e.g. an error).
+     * most recent check(s) failed to read the article - it can no longer be updated (e.g. an error).
      */
     @Column(name = "last_observed_at")
     private Instant lastObservedAt;

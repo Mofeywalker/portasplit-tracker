@@ -40,7 +40,7 @@ public class TelegramService {
 
     /**
      * Sends an automatic notification, honouring the runtime "send notifications" switch. Returns
-     * {@code false} (a no-op) when notifications are turned off — the explicit {@link #sendHtml} test
+     * {@code false} (a no-op) when notifications are turned off - the explicit {@link #sendHtml} test
      * path stays unaffected so users can always verify their configuration.
      */
     public boolean sendNotification(String html) {
@@ -58,7 +58,7 @@ public class TelegramService {
      *
      * <p>"At least one" rather than "all" is deliberate: callers use the result to decide whether a
      * one-off event (e.g. a new listing) has been handled. Requiring every recipient to succeed would
-     * re-send the whole batch on the next poll — spamming those who already received it — whenever a
+     * re-send the whole batch on the next poll - spamming those who already received it - whenever a
      * single chat id is unreachable (bot blocked, chat deleted). A total failure (Telegram down) still
      * returns {@code false} and is retried.
      */

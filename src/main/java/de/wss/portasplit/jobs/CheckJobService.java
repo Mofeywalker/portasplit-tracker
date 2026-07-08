@@ -27,8 +27,8 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
- * Central job queue for all availability checks. Every check — whether triggered by the scheduler or
- * manually from the dashboard — is enqueued as a {@link CheckJob}. Each {@link JobType source} has its
+ * Central job queue for all availability checks. Every check - whether triggered by the scheduler or
+ * manually from the dashboard - is enqueued as a {@link CheckJob}. Each {@link JobType source} has its
  * <strong>own single-thread worker</strong>, so the sources run <strong>in parallel</strong>,
  * while runs of the <em>same</em> source still execute strictly first-in-first-out (a slow run only
  * delays the next run of that same source, never the others). True browser-level parallelism comes
@@ -121,7 +121,7 @@ public class CheckJobService {
 
     /**
      * Runs {@code task} synchronously on the calling thread inside a one-off {@link CheckJob} context so
-     * its {@link JobLogger} lines land in the dashboard logbook — used for the toom login, which is
+     * its {@link JobLogger} lines land in the dashboard logbook - used for the toom login, which is
      * triggered from an HTTP request thread that otherwise has no bound job. Tagged with {@code type}
      * and kept in the recent-jobs ring like a normal run, but NOT placed in the per-type running/last
      * maps, so it never disturbs that source's scheduler cards or scrape cadence.
@@ -339,7 +339,7 @@ public class CheckJobService {
         synchronized (lock) {
             // Read `running` and `recent` together under the lock: a finishing job is moved from
             // `running` to `recent` atomically (same synchronized block in execute()), so the two are
-            // disjoint here — concatenating them never duplicates a job's log lines.
+            // disjoint here - concatenating them never duplicates a job's log lines.
             jobs.addAll(running.values());
             jobs.addAll(recent);
         }

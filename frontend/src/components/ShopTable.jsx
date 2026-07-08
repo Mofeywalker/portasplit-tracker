@@ -13,7 +13,7 @@ function ProductCell({ shop, p, onHistory }) {
   if (!p.tracked) {
     return (
       <div className="text-xs text-slate-400">
-        <span className="inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-2.5 py-1 ring-1 ring-slate-200 text-slate-500">— keine Daten</span>
+        <span className="inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-2.5 py-1 ring-1 ring-slate-200 text-slate-500">- keine Daten</span>
         <div className="mt-1 text-[11px] text-slate-400">noch nicht geprüft</div>
       </div>
     );

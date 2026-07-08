@@ -27,7 +27,7 @@
   to   { box-shadow: 0 0 0 9px rgba(16, 185, 129, 0); }
 }
 
-/* Tailwind v4 no longer sets cursor:pointer on buttons by default — restore it. */
+/* Tailwind v4 no longer sets cursor:pointer on buttons by default - restore it. */
 @layer base {
   button:not(:disabled),
   [role="button"]:not(:disabled),
@@ -57,7 +57,7 @@ body {
   min-height: 100vh;
 }
 
-/* Soft, friendly surface — white card with a gentle diffuse lift instead of a hard outline. */
+/* Soft, friendly surface - white card with a gentle diffuse lift instead of a hard outline. */
 .card {
   background: #ffffff;
   box-shadow:

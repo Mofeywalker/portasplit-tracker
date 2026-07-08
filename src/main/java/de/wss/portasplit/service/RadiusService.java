@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 
 /**
  * The Umkreissuche (radius search). Every chain branch is always scraped; this service decides, for a
- * configurable centre + radius, which branches are <em>in scope</em> — i.e. shown on the dashboard and
+ * configurable centre + radius, which branches are <em>in scope</em> - i.e. shown on the dashboard and
  * allowed to fire Telegram alerts. The geodesic distance is computed with Spatial4j.
  *
  * <p>The very same {@link #inScope} rule is consulted by both the dashboard display filter

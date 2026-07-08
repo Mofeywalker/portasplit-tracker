@@ -7,7 +7,7 @@ const stroke = {
   strokeLinejoin: 'round',
 };
 
-// App logo: the PortaSplit itself — indoor tower with vents, hose, outdoor pod.
+// App logo: the PortaSplit itself - indoor tower with vents, hose, outdoor pod.
 export const LogoMark = (p) => (
   <svg viewBox="0 0 24 24" {...stroke} {...p}>
     <rect x="3" y="3" width="10" height="18" rx="3" />
@@ -22,7 +22,7 @@ export const Snowflake = (p) => (
     <path d="m16 4-4 4-4-4M8 20l4-4 4 4M4 8l4 4-4 4M20 16l-4-4 4-4" />
   </svg>
 );
-// Half sun / half snowflake — the PortaSplit heats and cools.
+// Half sun / half snowflake - the PortaSplit heats and cools.
 export const SunSnow = (p) => (
   <svg viewBox="0 0 24 24" {...stroke} {...p}>
     <path d="M10 9a3 3 0 0 0 0 6" />

@@ -89,6 +89,11 @@ public class TelegramUpdatePoller {
         if (chatId == null) {
             return;
         }
+        // Private bot: when public opt-in is off, ignore anyone who is not already a recipient — no
+        // reply at all, so the bot is invisible to strangers. Existing recipients can still /stop.
+        if (!settings.telegramPublicOptInEnabled() && !subscribers.isConfirmed(chatId)) {
+            return;
+        }
         String text = message.path("text").asText("").trim();
         // /start may arrive as "/start" or "/start@BotName", possibly with a deep-link payload.
         String command = text.split("\\s+", 2)[0].split("@", 2)[0].toLowerCase();
@@ -133,6 +138,12 @@ public class TelegramUpdatePoller {
             return;
         }
         if (!CONFIRM_DATA.equals(data)) {
+            client.answerCallback(callbackId, null);
+            return;
+        }
+        // Private bot with public opt-in off: a stranger's (stale) confirm button does nothing. Clear
+        // the client's spinner without a message and without subscribing them.
+        if (!settings.telegramPublicOptInEnabled() && !subscribers.isConfirmed(chatId)) {
             client.answerCallback(callbackId, null);
             return;
         }

@@ -19,7 +19,7 @@ import java.util.regex.Pattern;
 /**
  * Hornbach availability. Hornbach sits behind a Fastly bot challenge (CloakBrowser passes it) and serves
  * a React/Apollo storefront whose data is in an embedded Apollo state. The Midea PortaSplit is currently
- * <em>not listed</em> on hornbach.de (seasonal — live-confirmed "0-Treffer"), so there is no article /
+ * <em>not listed</em> on hornbach.de (seasonal - live-confirmed "0-Treffer"), so there is no article /
  * PDP to query per market yet. This worker therefore watches the search listing: while the product is
  * unlisted it reports every branch as not available ("nicht gelistet"); once Hornbach relists it
  * ({@code articleCount > 0}) it flags that prominently so the per-market GraphQL check can be added.

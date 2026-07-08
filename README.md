@@ -12,7 +12,7 @@ sobald ein Gerät verfügbar wird. Läuft als kleine Spring-Boot-App mit eingeba
 <a href='https://ko-fi.com/J3G820LBTF' target='_blank'><img height='36' style='border:0px;height:36px;' src='https://storage.ko-fi.com/cdn/kofi6.png?v=6' border='0' alt='Buy Me a Coffee at ko-fi.com' /></a>
 
 
-## Was es kann
+## Funktionen
 
 - Prüft **OBI, toom, Bauhaus, Hornbach, Globus** (Filialen + Online-Shop) sowie **Amazon**, **Lidl**
   und **kleinanzeigen.de** - jede Quelle läuft als eigener, unabhängiger Worker
@@ -26,8 +26,8 @@ sobald ein Gerät verfügbar wird. Läuft als kleine Spring-Boot-App mit eingeba
 ## Installation
 
 > 🤖 **Mit einem KI-Agenten installieren?** Gib deinem Coding-Agenten (Claude Code, Claude Cowork,
-> opencode, …) die Datei **[AGENT_SETUP.md](AGENT_SETUP.md)** — sie führt ihn Schritt für Schritt
-> durch eine geführte Installation und Konfiguration auf deinem PC.
+> opencode, …) die Datei **[AGENT_SETUP.md](AGENT_SETUP.md)** - sie führt ihn Schritt für Schritt
+> durch eine geführte Installation und Konfiguration auf deiner Maschine.
 
 **Voraussetzungen:** JDK 21+, Maven 3.9+ (für den lokalen Start) bzw. Docker (empfohlen).
 
@@ -50,7 +50,7 @@ gibt drei Tags:
 
 | Tag | zeigt auf | Empfehlung |
 | --- | --- | --- |
-| `0.1.0` | genau diese Version (unveränderlich) | **produktiv** — reproduzierbar, kein überraschendes Update |
+| `0.1.0` | genau diese Version (unveränderlich) | **produktiv** - reproduzierbar, kein überraschendes Update |
 | `0.1` | neuestes Patch der Minor-Reihe | wenn du Patches automatisch willst |
 | `latest` | neuestes **stabiles** Release | einfachster Einstieg / immer aktuell |
 
@@ -63,7 +63,7 @@ docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
 
 Für einen **festgepinnten** Stand die Zeile `image:` in `docker-compose.prod.yml` auf ein konkretes
 Tag setzen, z. B. `image: ghcr.io/fwilldev/portasplit-tracker:0.1.0`. CloakBrowser bleibt ein
-eigenständiger Container und wird von Compose weiterhin mitgestartet — nur der Build der App
+eigenständiger Container und wird von Compose weiterhin mitgestartet - nur der Build der App
 entfällt. (Benötigt Docker Compose v2.24+.)
 
 ### Lokal mit Maven
