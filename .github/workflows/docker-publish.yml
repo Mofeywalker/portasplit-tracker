@@ -1,11 +1,10 @@
 name: Build & Push Docker Image
 
+# Baut & published das Image nur bei einem neuen Versions-Tag (v*), passend zum
+# tag-basierten Release-Flow. Kein Build mehr bei jedem main-Push.
 on:
   push:
-    branches: [main]
     tags: ["v*"]
-  pull_request:
-    branches: [main]
 
 jobs:
   docker:
@@ -30,16 +29,16 @@ jobs:
         id: meta
         with:
           images: ghcr.io/${{ github.repository }}
+          # SemVer-Tags: 0.1.0 und 0.1. `latest` setzt die metadata-action per Default
+          # (flavor latest=auto) automatisch NUR fürs neueste stabile Release (kein Prerelease).
           tags: |
-            type=ref,event=branch
-            type=ref,event=tag
-            type=raw,value=latest,enable={{ is_default_branch }}
-            type=raw,value={{date 'YYYY-MM-DD'}}.${{ github.run_number }},enable={{ is_default_branch }}
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
 
       - uses: docker/build-push-action@v7
         with:
           context: .
-          push: ${{ github.event_name != 'pull_request' }}
+          push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           platforms: linux/amd64,linux/arm64

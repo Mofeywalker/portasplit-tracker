@@ -41,20 +41,30 @@ docker compose up -d --build
 Startet die App **und** den CloakBrowser. Dashboard danach
 unter **http://localhost:8080** verfügbar.
 
-#### Ohne lokalen Build (vorgebautes Image)
+#### Ohne lokalen Build (vorgebautes Image aus einem Release)
 
-Bei jedem Push auf `main` baut GitHub Actions automatisch ein Image für `linux/amd64` **und**
-`linux/arm64` und veröffentlicht es nach `ghcr.io/fwilldev/portasplit-tracker` (Tags: `latest`,
-Branch-/Versions-Tags und ein Datums-Tag). So sparst du dir den lokalen Maven-/Node-Build. Nutze
-dafür die mitgelieferte Override-Datei `docker-compose.prod.yml`:
+Für jedes [**Release**](https://github.com/fwilldev/portasplit-tracker/releases) (Git-Tag `v*`)
+baut GitHub Actions automatisch ein Image für `linux/amd64` **und** `linux/arm64` und veröffentlicht
+es nach `ghcr.io/fwilldev/portasplit-tracker`. So sparst du dir den lokalen Maven-/Node-Build. Es
+gibt drei Tags:
+
+| Tag | zeigt auf | Empfehlung |
+| --- | --- | --- |
+| `0.1.0` | genau diese Version (unveränderlich) | **produktiv** — reproduzierbar, kein überraschendes Update |
+| `0.1` | neuestes Patch der Minor-Reihe | wenn du Patches automatisch willst |
+| `latest` | neuestes **stabiles** Release | einfachster Einstieg / immer aktuell |
+
+Nutze die mitgelieferte Override-Datei `docker-compose.prod.yml` (zieht standardmäßig `latest`):
 
 ```bash
 docker compose -f docker-compose.yml -f docker-compose.prod.yml pull
 docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
 ```
 
-CloakBrowser bleibt ein eigenständiger Container und wird von Compose weiterhin mitgestartet — nur
-der Build der App entfällt. (Benötigt Docker Compose v2.24+.)
+Für einen **festgepinnten** Stand die Zeile `image:` in `docker-compose.prod.yml` auf ein konkretes
+Tag setzen, z. B. `image: ghcr.io/fwilldev/portasplit-tracker:0.1.0`. CloakBrowser bleibt ein
+eigenständiger Container und wird von Compose weiterhin mitgestartet — nur der Build der App
+entfällt. (Benötigt Docker Compose v2.24+.)
 
 ### Lokal mit Maven
 

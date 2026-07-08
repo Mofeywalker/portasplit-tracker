@@ -32,7 +32,9 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          # Image-Tag ist SemVer-normalisiert (ohne führendes v): v0.1.0 -> 0.1.0
+          VERSION="${GITHUB_REF_NAME#v}"
           gh release create "$GITHUB_REF_NAME" target/*.jar \
             --title "$GITHUB_REF_NAME" \
             --generate-notes \
-            --notes "Docker-Image: \`docker pull ghcr.io/${GITHUB_REPOSITORY}:${GITHUB_REF_NAME}\`"
+            --notes "Docker-Image: \`docker pull ghcr.io/${GITHUB_REPOSITORY}:${VERSION}\`"

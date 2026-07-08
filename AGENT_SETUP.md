@@ -199,19 +199,23 @@ docker compose up -d --build
 Das baut Frontend + Backend, startet **cloakbrowser** und **app**. Der erste Build dauert länger
 (Maven-Deps + Node-Download im Image).
 
-💡 **Alternative ohne lokalen Build:** Es gibt ein von GitHub Actions vorgebautes Image für
-`linux/amd64` **und** `linux/arm64` unter `ghcr.io/fwilldev/portasplit-tracker` (Tag `latest`). Wenn
-kein lokaler Build gewünscht ist (z. B. schwacher Server, kein JDK/Node nötig), nutze die
-mitgelieferte Override-Datei `docker-compose.prod.yml` (zieht das Image statt zu bauen; braucht
-Docker Compose v2.24+):
+💡 **Alternative ohne lokalen Build (empfohlen für reine Nutzer):** Zu jedem
+[Release](https://github.com/fwilldev/portasplit-tracker/releases) gibt es ein vorgebautes Image
+für `linux/amd64` **und** `linux/arm64` unter `ghcr.io/fwilldev/portasplit-tracker`. Verfügbare
+Tags: `latest` (neuestes stabiles Release), `0.1` (neuestes Patch der Minor-Reihe) und ein
+festgepinntes Versions-Tag wie `0.1.0`. Wenn kein lokaler Build gewünscht ist (z. B. schwacher
+Server, kein JDK/Node nötig), nutze die mitgelieferte Override-Datei `docker-compose.prod.yml`
+(zieht `latest` statt zu bauen; braucht Docker Compose v2.24+):
 
 ```bash
 docker compose -f docker-compose.yml -f docker-compose.prod.yml pull
 docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
 ```
 
-CloakBrowser bleibt in beiden Fällen ein separater Container und wird mitgestartet. Die
-✅-Prüfungen unten gelten unverändert.
+🧑 **Frage (optional):** Soll ein **fester Versionsstand** verwendet werden (reproduzierbar) statt
+`latest`? Wenn ja, in `docker-compose.prod.yml` die `image:`-Zeile auf z. B.
+`ghcr.io/fwilldev/portasplit-tracker:0.1.0` setzen. CloakBrowser bleibt in beiden Fällen ein
+separater Container und wird mitgestartet. Die ✅-Prüfungen unten gelten unverändert.
 
 ✅ **Prüfen:**
 
