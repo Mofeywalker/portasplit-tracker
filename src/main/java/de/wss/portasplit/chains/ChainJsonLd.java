@@ -36,6 +36,20 @@ final class ChainJsonLd {
                     + "return JSON.stringify({ready:a.length>0,ld:a});}"
                     + "catch(e){return JSON.stringify({ready:false,ld:[]});}})()";
 
+    /**
+     * Substring shared by every "the product page loaded but carries no purchasable offer" note - i.e.
+     * the article is delisted / its PDP is gone (a delisted PDP answers 404 with a page that has no
+     * {@code Offer}). Chains word it slightly differently ("online nicht gelistet", "bei Hornbach nicht
+     * gelistet"), but all contain this mark, so {@code ChainCheckService} can detect the delisted state
+     * uniformly via {@link #isNotListed(String)} without string-matching each chain's exact wording.
+     */
+    static final String NOT_LISTED_MARK = "nicht gelistet";
+
+    /** Whether a snapshot note marks a delisted / no-longer-reachable product page (see {@link #NOT_LISTED_MARK}). */
+    static boolean isNotListed(String note) {
+        return note != null && note.contains(NOT_LISTED_MARK);
+    }
+
     private ChainJsonLd() {
     }
 
@@ -103,7 +117,7 @@ final class ChainJsonLd {
     static AvailabilitySnapshot toSnapshot(Offer offer, String url) {
         if (offer == null) {
             return new AvailabilitySnapshot(true, true, false, null, null, url,
-                    System.currentTimeMillis(), "online nicht gelistet");
+                    System.currentTimeMillis(), "online " + NOT_LISTED_MARK);
         }
         String note = offer.available()
                 ? "online lieferbar" + (offer.price() != null ? " (" + offer.price() + " €)" : "")

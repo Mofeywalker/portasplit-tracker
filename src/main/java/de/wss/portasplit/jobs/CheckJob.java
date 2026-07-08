@@ -28,6 +28,8 @@ public class CheckJob {
     private volatile Instant finishedAt;
     private volatile String summary;
     private volatile String error;
+    /** Non-fatal heads-up worth surfacing (e.g. "Artikelseite nicht mehr erreichbar"), or {@code null}. */
+    private volatile String notice;
 
     public CheckJob(long id, JobType type, JobTrigger trigger, Instant queuedAt) {
         this.id = id;
@@ -42,10 +44,15 @@ public class CheckJob {
     }
 
     public synchronized void finish(JobState finalState, Instant when, String summary, String error) {
+        finish(finalState, when, summary, error, null);
+    }
+
+    public synchronized void finish(JobState finalState, Instant when, String summary, String error, String notice) {
         this.state = finalState;
         this.finishedAt = when;
         this.summary = summary;
         this.error = error;
+        this.notice = notice;
     }
 
     /** Appends one technical log line (thread-safe). */
@@ -98,6 +105,10 @@ public class CheckJob {
 
     public String error() {
         return error;
+    }
+
+    public String notice() {
+        return notice;
     }
 
     /** Wall-clock duration of the run, or {@code null} while not yet finished. */

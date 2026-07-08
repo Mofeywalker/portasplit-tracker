@@ -229,6 +229,7 @@ public class CheckJobService {
         JobState finalState = JobState.FAILED;
         String summary = null;
         String error = null;
+        String notice = null;
         try {
             // Re-check at run time: the source may have been disabled (dashboard toggle) after this job
             // was enqueued but before its worker picked it up. Skip rather than run a now-disabled source.
@@ -242,6 +243,7 @@ public class CheckJobService {
                 finalState = outcome.state();
                 summary = outcome.summary();
                 error = outcome.error();
+                notice = outcome.notice();
                 if (summary != null) {
                     jobLogger.info("Fertig: {}", summary);
                 }
@@ -257,7 +259,7 @@ public class CheckJobService {
             jobLogger.end();
         }
 
-        job.finish(finalState, Instant.now(), summary, error);
+        job.finish(finalState, Instant.now(), summary, error, notice);
         synchronized (lock) {
             running.remove(job.type());
             lastByType.put(job.type(), job);
@@ -277,27 +279,32 @@ public class CheckJobService {
             case AMAZON -> scrapeOutcome(amazonService.runCheck(), "Produkt(e)", "verfügbar");
             case LIDL -> scrapeOutcome(lidlService.runCheck(), "Produkt(e)", "verfügbar");
             case KLEINANZEIGEN -> scrapeOutcome(kleinanzeigenService.runCheck(), "Anzeige(n)", "neu gemeldet");
-            default -> new Outcome(JobState.SKIPPED, "unbekannte Quelle", null);
+            default -> new Outcome(JobState.SKIPPED, "unbekannte Quelle", null, null);
         };
     }
 
     private Outcome scrapeOutcome(ScrapeCheckResult r, String scannedNoun, String availableVerb) {
         if (!r.ran()) {
             String reason = r.errors().isEmpty() ? "übersprungen" : String.join("; ", r.errors());
-            return new Outcome(JobState.SKIPPED, reason, null);
+            return new Outcome(JobState.SKIPPED, reason, null, null);
         }
         String summary = String.format("%d %s geprüft · %d %s",
                 r.scanned(), scannedNoun, r.available(), availableVerb);
+        // Delisted / no-longer-reachable article pages: a real, observed catalogue state (not a glitch).
+        // Surfaced as a distinct amber notice and, on its own, still lifts a clean run to WARN so the
+        // dashboard flags it - the raw scrape errors stay in the separate `error` channel.
+        String notice = r.notices().isEmpty() ? null : String.join("; ", r.notices());
         if (r.errors().isEmpty()) {
-            return new Outcome(JobState.SUCCESS, summary, null);
+            JobState state = notice != null ? JobState.WARN : JobState.SUCCESS;
+            return new Outcome(state, summary, null, notice);
         }
         String error = String.join("; ", r.errors());
         // Some progress despite errors → partial (WARN); nothing read at all → FAILED.
         JobState state = r.scanned() > 0 ? JobState.WARN : JobState.FAILED;
-        return new Outcome(state, summary, error);
+        return new Outcome(state, summary, error, notice);
     }
 
-    private record Outcome(JobState state, String summary, String error) {}
+    private record Outcome(JobState state, String summary, String error, String notice) {}
 
     // --- read side (dashboard) -------------------------------------------------------------------
 

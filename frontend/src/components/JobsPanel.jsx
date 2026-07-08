@@ -4,6 +4,19 @@ import { relative, duration } from '../format.js';
 import { Layers, Clock, Alert, Refresh, ChevronDown, Copy, Check } from '../icons.jsx';
 import { BrandLogo } from '../logos.jsx';
 
+// A source counts as "in trouble" when its last run failed or warned. FAILED outranks WARN so the
+// aggregate header shows the most severe state present.
+function troubleLevel(sources) {
+  let level = null; // null | 'warn' | 'error'
+  let warn = 0;
+  let error = 0;
+  for (const s of sources) {
+    if (s.state === 'FAILED') { error++; level = 'error'; }
+    else if (s.state === 'WARN') { warn++; if (level !== 'error') level = 'warn'; }
+  }
+  return { level, warn, error };
+}
+
 // Sources hidden from the "Prüfungen" panel in the frontend (still checked on the backend).
 const HIDDEN_SOURCES = new Set(['HAGEBAU']);
 
@@ -47,6 +60,21 @@ function ErrorBox({ text }) {
   );
 }
 
+// Amber heads-up for a delisted / no-longer-reachable article page. Distinct from the rose ErrorBox:
+// this is a real, observed catalogue state ("the product page is gone"), not a scrape failure.
+function NoticeBox({ text }) {
+  return (
+    <div className="rounded-lg ring-1 ring-amber-200 bg-amber-50/70">
+      <div className="flex items-start gap-1.5 px-2 py-1.5">
+        <Alert className="h-3.5 w-3.5 shrink-0 mt-px text-amber-600" />
+        <span className="break-words text-[11px] text-amber-700 leading-snug">
+          <b className="font-bold">Artikelseite gibt es nicht mehr!</b> {text}
+        </span>
+      </div>
+    </div>
+  );
+}
+
 function JobCard({ s, now, jobsAt, onToggle, onTrigger, busy }) {
   const m = jobMeta(s.type);
   const badge = stateBadge(s.state);
@@ -55,6 +83,7 @@ function JobCard({ s, now, jobsAt, onToggle, onTrigger, busy }) {
   const live = s.running || s.queued;
   const next = (!live && s.enabled) ? nextText(s.nextRunInMs, now, jobsAt) : null;
   const showError = last && last.error && (last.state === 'FAILED' || last.state === 'WARN');
+  const showNotice = last && last.notice;
 
   return (
     <div className={`card rounded-2xl ring-1 p-4 animate-fade-in ${live ? m.ring : 'ring-slate-200'}`}>
@@ -85,6 +114,7 @@ function JobCard({ s, now, jobsAt, onToggle, onTrigger, busy }) {
               <span>{last.triggerLabel}</span>
               {last.logCount > 0 && <span>{last.logCount} Log-Einträge</span>}
             </div>
+            {showNotice && <NoticeBox text={last.notice} />}
             {showError && <ErrorBox text={last.error} />}
           </>
         ) : (
@@ -133,18 +163,42 @@ export default function JobsPanel({ jobs, now, jobsAt, onToggle, onTrigger, pend
   const running = jobs?.running || [];
   const activeCount = sources.filter((s) => s.enabled).length;
 
+  const { level, warn, error } = troubleLevel(sources);
+  // The whole accordion is framed by its worst state: red on any error, amber on any warning
+  // (delisted page / partial run), calm slate otherwise - visible even while collapsed.
+  const frame = level === 'error'
+    ? 'ring-2 ring-rose-300 bg-rose-50/40 hover:bg-rose-50/70'
+    : level === 'warn'
+      ? 'ring-2 ring-amber-300 bg-amber-50/40 hover:bg-amber-50/70'
+      : 'ring-1 ring-slate-200 bg-white hover:bg-slate-50/70';
+  const iconCls = level === 'error' ? 'text-rose-500' : level === 'warn' ? 'text-amber-500' : 'text-brand-500';
+
   return (
     <section>
       <button type="button" onClick={() => setOpen((o) => !o)} aria-expanded={open}
-        className="w-full flex items-center justify-between gap-3 rounded-xl px-1 py-1.5 text-left hover:bg-slate-50/60 transition">
+        className={`w-full flex items-center justify-between gap-3 rounded-2xl px-3.5 py-3 text-left shadow-sm transition ${frame}`}>
         <h2 className="text-sm font-bold text-slate-900 flex items-center gap-2 min-w-0">
-          <Layers className="h-4 w-4 text-brand-500 shrink-0" /> Prüfungen
+          <Layers className={`h-4 w-4 shrink-0 ${iconCls}`} /> Prüfungen
+          {error > 0 && (
+            <span className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-bold ring-1 bg-rose-50 text-rose-700 ring-rose-200 shrink-0">
+              <Alert className="h-3 w-3" /> {error} Fehler
+            </span>
+          )}
+          {warn > 0 && (
+            <span className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-bold ring-1 bg-amber-50 text-amber-700 ring-amber-200 shrink-0">
+              <Alert className="h-3 w-3" /> {warn} {warn === 1 ? 'Warnung' : 'Warnungen'}
+            </span>
+          )}
           <span className="text-xs font-medium text-slate-400 truncate">
             {running.length > 0 ? `läuft: ${running.map((r) => jobMeta(r.type).label).join(', ')}` : `${activeCount} aktiv`}
             {queueLen > 0 ? ` · ${queueLen} in Warteschlange` : ''}
           </span>
         </h2>
-        <ChevronDown className={`h-4 w-4 text-slate-400 shrink-0 transition-transform ${open ? 'rotate-180' : ''}`} />
+        {/* Explicit "this is expandable" affordance: a labelled pill, not just a lone arrow. */}
+        <span className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-bold ring-1 ring-slate-200 bg-white/70 text-slate-500 shrink-0">
+          {open ? 'Schließen' : 'Details'}
+          <ChevronDown className={`h-3.5 w-3.5 transition-transform ${open ? 'rotate-180' : ''}`} />
+        </span>
       </button>
       {open && (
         <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3 animate-fade-in">

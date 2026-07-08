@@ -109,9 +109,31 @@ public class ChainCheckService {
             }
         }
 
+        List<String> notices = delistedNotices(readings);
+        if (!notices.isEmpty()) {
+            jobLog.warn("{} · {}", type.label(), String.join("; ", notices));
+        }
+
         long duration = System.currentTimeMillis() - start;
-        log.info("{} check done in {} ms: {} reading(s), {} available, {} error(s)",
-                type, duration, readings.size(), available, errors.size());
-        return new ScrapeCheckResult(runAt, true, readings.size(), available, duration, errors);
+        log.info("{} check done in {} ms: {} reading(s), {} available, {} error(s), {} notice(s)",
+                type, duration, readings.size(), available, errors.size(), notices.size());
+        return new ScrapeCheckResult(runAt, true, readings.size(), available, duration, errors, notices);
+    }
+
+    /**
+     * Derives "the article page is no longer reachable / delisted" notices from the run's readings. A
+     * reading whose note is marked {@link ChainJsonLd#isNotListed} means we definitively loaded the page
+     * (or searched the catalogue) and found no purchasable offer - i.e. the PDP is gone (a delisted PDP
+     * answers 404 with an offer-less page) rather than merely out of stock. Deduplicated to one line per
+     * affected product, so a chain that reports every branch as unlisted still yields a single notice.
+     */
+    private List<String> delistedNotices(List<ChainReading> readings) {
+        java.util.Set<String> products = new java.util.LinkedHashSet<>();
+        for (ChainReading r : readings) {
+            if (r.snapshot().observed() && ChainJsonLd.isNotListed(r.snapshot().note())) {
+                products.add(r.product().displayName());
+            }
+        }
+        return products.stream().map(p -> p + ": Artikelseite nicht mehr erreichbar").toList();
     }
 }

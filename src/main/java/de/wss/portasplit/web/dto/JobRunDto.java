@@ -19,6 +19,7 @@ public record JobRunDto(
         Long durationMs,
         String summary,
         String error,
+        String notice,
         int logCount
 ) {
     public static JobRunDto from(CheckJob job) {
@@ -40,6 +41,7 @@ public record JobRunDto(
                     job.durationMs(),
                     job.summary(),
                     job.error(),
+                    job.notice(),
                     job.logCount());
         }
     }
