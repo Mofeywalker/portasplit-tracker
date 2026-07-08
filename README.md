@@ -45,22 +45,16 @@ unter **http://localhost:8080** verfügbar.
 
 Bei jedem Push auf `main` baut GitHub Actions automatisch ein Image für `linux/amd64` **und**
 `linux/arm64` und veröffentlicht es nach `ghcr.io/fwilldev/portasplit-tracker` (Tags: `latest`,
-Branch-/Versions-Tags und ein Datums-Tag). So sparst du dir den lokalen Maven-/Node-Build. Ersetze
-dazu in `docker-compose.yml` beim `app`-Service die Zeile `build: .` durch:
-
-```yaml
-    image: ghcr.io/fwilldev/portasplit-tracker:latest
-```
-
-und starte dann ohne `--build`:
+Branch-/Versions-Tags und ein Datums-Tag). So sparst du dir den lokalen Maven-/Node-Build. Nutze
+dafür die mitgelieferte Override-Datei `docker-compose.prod.yml`:
 
 ```bash
-docker compose pull
-docker compose up -d
+docker compose -f docker-compose.yml -f docker-compose.prod.yml pull
+docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
 ```
 
 CloakBrowser bleibt ein eigenständiger Container und wird von Compose weiterhin mitgestartet — nur
-der Build der App entfällt.
+der Build der App entfällt. (Benötigt Docker Compose v2.24+.)
 
 ### Lokal mit Maven
 

@@ -1,0 +1,16 @@
+# Produktions-Override: nutzt das von GitHub Actions vorgebaute Image aus der GitHub Container
+# Registry, statt die App lokal zu bauen. Kombiniere es mit der Basis-Datei:
+#
+#     docker compose -f docker-compose.yml -f docker-compose.prod.yml pull
+#     docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+#
+# Der `app`-Service baut hier NICHT lokal (die build-Sektion der Basis wird via `!reset` entfernt),
+# sondern zieht `ghcr.io/fwilldev/portasplit-tracker:latest` (multi-arch: amd64 + arm64).
+# CloakBrowser, Netzwerk, Volumes, Healthchecks usw. bleiben unverändert aus docker-compose.yml.
+#
+# Voraussetzung: Docker Compose v2.24+ (für das `!reset`-Tag).
+services:
+  app:
+    build: !reset null
+    image: ghcr.io/fwilldev/portasplit-tracker:latest
+    pull_policy: always

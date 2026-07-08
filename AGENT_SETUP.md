@@ -201,16 +201,17 @@ Das baut Frontend + Backend, startet **cloakbrowser** und **app**. Der erste Bui
 
 💡 **Alternative ohne lokalen Build:** Es gibt ein von GitHub Actions vorgebautes Image für
 `linux/amd64` **und** `linux/arm64` unter `ghcr.io/fwilldev/portasplit-tracker` (Tag `latest`). Wenn
-kein lokaler Build gewünscht ist (z. B. schwacher Server, kein JDK/Node nötig), ersetze in
-`docker-compose.yml` beim `app`-Service `build: .` durch
-`image: ghcr.io/fwilldev/portasplit-tracker:latest` und starte stattdessen:
+kein lokaler Build gewünscht ist (z. B. schwacher Server, kein JDK/Node nötig), nutze die
+mitgelieferte Override-Datei `docker-compose.prod.yml` (zieht das Image statt zu bauen; braucht
+Docker Compose v2.24+):
 
 ```bash
-docker compose pull
-docker compose up -d
+docker compose -f docker-compose.yml -f docker-compose.prod.yml pull
+docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
 ```
 
-CloakBrowser bleibt in beiden Fällen ein separater Container und wird mitgestartet.
+CloakBrowser bleibt in beiden Fällen ein separater Container und wird mitgestartet. Die
+✅-Prüfungen unten gelten unverändert.
 
 ✅ **Prüfen:**
 
