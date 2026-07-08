@@ -1,0 +1,38 @@
+name: Release
+
+# Erstellt ein GitHub-Release, wenn ein Versions-Tag gepusht wird:
+#
+#     git tag v0.1.0 && git push origin v0.1.0
+#
+# Das versionierte Docker-Image (ghcr.io/<repo>:v0.1.0) baut der separate
+# docker-publish-Workflow, der ebenfalls auf v*-Tags triggert.
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: maven
+
+      # Fat-Jar bauen und als Download an das Release hängen (für Nutzer ohne Docker).
+      - run: mvn -B -DskipTests package
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" target/*.jar \
+            --title "$GITHUB_REF_NAME" \
+            --generate-notes \
+            --notes "Docker-Image: \`docker pull ghcr.io/${GITHUB_REPOSITORY}:${GITHUB_REF_NAME}\`"
